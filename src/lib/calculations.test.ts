@@ -73,7 +73,8 @@ describe('calculations', () => {
       recipeId: recipe.id,
       packagingCost: 10,
       extrasCost: 5,
-      energyCost: 5,
+      energyBakingHourlyCost: 5,
+      energyActivityHourlyCost: 2,
       deliveryCost: 25,
       includeDelivery: false,
       hourlyRate: 30,
@@ -85,14 +86,15 @@ describe('calculations', () => {
     });
 
     expect(result.ingredientsCost).toBe(1);
+    expect(result.energyCost).toBe(8);
     expect(result.laborCost).toBe(60);
-    expect(result.baseCost).toBe(81);
+    expect(result.baseCost).toBe(84);
     expect(result.safetyMarginValue).toBe(9);
-    expect(result.totalCost).toBe(90);
-    expect(result.exactPrice).toBe(110);
-    expect(result.suggestedPrice).toBe(110);
-    expect(result.pricePerServing).toBe(11);
-    expect(result.pricePerKg).toBe(110);
+    expect(result.totalCost).toBe(93);
+    expect(result.exactPrice).toBe(113);
+    expect(result.suggestedPrice).toBe(115);
+    expect(result.pricePerServing).toBe(12);
+    expect(result.pricePerKg).toBe(115);
   });
 
   it('dolicza koszt dowozu tylko po wybraniu opcji z dowozem', () => {
@@ -100,7 +102,8 @@ describe('calculations', () => {
       recipeId: recipe.id,
       packagingCost: 10,
       extrasCost: 5,
-      energyCost: 5,
+      energyBakingHourlyCost: 5,
+      energyActivityHourlyCost: 2,
       deliveryCost: 25,
       includeDelivery: true,
       hourlyRate: 30,
@@ -112,9 +115,10 @@ describe('calculations', () => {
     });
 
     expect(result.deliveryCost).toBe(25);
-    expect(result.baseCost).toBe(106);
+    expect(result.energyCost).toBe(8);
+    expect(result.baseCost).toBe(109);
     expect(result.safetyMarginValue).toBe(11);
-    expect(result.totalCost).toBe(117);
+    expect(result.totalCost).toBe(120);
     expect(result.suggestedPrice).toBe(140);
   });
 

@@ -12,6 +12,7 @@ import type {
   Ingredient,
   ProfitMode,
   QuoteHistoryItem,
+  QuoteInput,
   Recipe,
   RecipeCategory,
   RoundTo,
@@ -118,9 +119,13 @@ function normalizeSettings(settings?: Partial<AppSettings>): AppSettings {
       settings?.defaultProfitFixed,
       defaultSettings.defaultProfitFixed
     )),
-    defaultEnergyCost: roundCurrency(nonNegativeNumber(
-      settings?.defaultEnergyCost,
-      defaultSettings.defaultEnergyCost
+    defaultEnergyBakingHourlyCost: roundCurrency(nonNegativeNumber(
+      settings?.defaultEnergyBakingHourlyCost,
+      defaultSettings.defaultEnergyBakingHourlyCost
+    )),
+    defaultEnergyActivityHourlyCost: roundCurrency(nonNegativeNumber(
+      settings?.defaultEnergyActivityHourlyCost,
+      defaultSettings.defaultEnergyActivityHourlyCost
     )),
     defaultDeliveryCost: roundCurrency(nonNegativeNumber(
       settings?.defaultDeliveryCost,
@@ -199,6 +204,15 @@ function normalizeHistoryItem(
   }
 
   const deliveryCost = roundCurrency(nonNegativeNumber(value.input.deliveryCost, 0));
+  const input = value.input as Partial<QuoteInput>;
+  const energyBakingHourlyCost = roundCurrency(nonNegativeNumber(
+    input.energyBakingHourlyCost,
+    defaultSettings.defaultEnergyBakingHourlyCost
+  ));
+  const energyActivityHourlyCost = roundCurrency(nonNegativeNumber(
+    input.energyActivityHourlyCost,
+    defaultSettings.defaultEnergyActivityHourlyCost
+  ));
 
   return {
     id: value.id,
@@ -212,6 +226,8 @@ function normalizeHistoryItem(
     },
     input: {
       ...value.input,
+      energyBakingHourlyCost,
+      energyActivityHourlyCost,
       deliveryCost,
       includeDelivery: value.input.includeDelivery === true
     }

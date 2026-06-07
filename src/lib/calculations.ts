@@ -150,6 +150,24 @@ export function calculateLaborCost(recipe: Recipe, hourlyRate: number): number {
   return roundCurrency((getActiveLaborMinutes(recipe) / 60) * hourlyRate);
 }
 
+export function getEnergyActivityMinutes(recipe: Recipe): number {
+  return recipe.preparationTimeMinutes + recipe.bakingTimeMinutes + recipe.cleaningTimeMinutes;
+}
+
+export function calculateEnergyCost(
+  recipe: Recipe,
+  bakingHourlyCost: number,
+  activityHourlyCost: number
+): number {
+  assertNonNegative(bakingHourlyCost, 'Energia pieczenia');
+  assertNonNegative(activityHourlyCost, 'Energia przygotowania, pieczenia i sprzątania');
+
+  const bakingCost = (recipe.bakingTimeMinutes / 60) * bakingHourlyCost;
+  const activityCost = (getEnergyActivityMinutes(recipe) / 60) * activityHourlyCost;
+
+  return roundCurrency(bakingCost + activityCost);
+}
+
 export function roundPrice(price: number, roundTo: RoundTo): number {
   if (!Number.isFinite(price) || price < 0) {
     throw new Error('Cena do zaokrąglenia nie może być ujemna.');
@@ -165,7 +183,8 @@ export function calculateQuote(
 ): QuoteResult {
   assertNonNegative(input.packagingCost, 'Koszt opakowania');
   assertNonNegative(input.extrasCost, 'Koszt dodatków');
-  assertNonNegative(input.energyCost, 'Koszt energii');
+  assertNonNegative(input.energyBakingHourlyCost, 'Energia pieczenia');
+  assertNonNegative(input.energyActivityHourlyCost, 'Energia przygotowania, pieczenia i sprzątania');
   assertNonNegative(input.deliveryCost, 'Koszt dowozu');
   assertNonNegative(input.hourlyRate, 'Stawka godzinowa');
   assertNonNegative(input.safetyMarginPercent, 'Dodatkowe koszty (%)');
@@ -179,12 +198,17 @@ export function calculateQuote(
   }
 
   const laborCost = calculateLaborCost(recipe, input.hourlyRate);
+  const energyCost = calculateEnergyCost(
+    recipe,
+    input.energyBakingHourlyCost,
+    input.energyActivityHourlyCost
+  );
   const deliveryCost = input.includeDelivery ? roundCurrency(input.deliveryCost) : 0;
   const baseCost = roundCurrency(
     ingredientsCost.total +
       input.packagingCost +
       input.extrasCost +
-      input.energyCost +
+      energyCost +
       deliveryCost +
       laborCost
   );
@@ -203,7 +227,7 @@ export function calculateQuote(
     laborCost,
     packagingCost: roundCurrency(input.packagingCost),
     extrasCost: roundCurrency(input.extrasCost),
-    energyCost: roundCurrency(input.energyCost),
+    energyCost,
     deliveryCost,
     baseCost,
     safetyMarginValue,

@@ -91,10 +91,16 @@ export function SettingsPage({
             onValueChange={(value) => updateSettings('defaultSafetyMarginPercent', value)}
           />
           <NumberInput
-            label="Energia"
-            value={settings.defaultEnergyCost}
-            suffix="zł"
-            onValueChange={(value) => updateSettings('defaultEnergyCost', value)}
+            label="Energia pieczenia"
+            value={settings.defaultEnergyBakingHourlyCost}
+            suffix="zł/h"
+            onValueChange={(value) => updateSettings('defaultEnergyBakingHourlyCost', value)}
+          />
+          <NumberInput
+            label="Energia procesu"
+            value={settings.defaultEnergyActivityHourlyCost}
+            suffix="zł/h"
+            onValueChange={(value) => updateSettings('defaultEnergyActivityHourlyCost', value)}
           />
           <NumberInput
             label="Koszt dowozu"

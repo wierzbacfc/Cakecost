@@ -1,6 +1,7 @@
 import { Calculator, Clock, Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyState } from '../../components/EmptyState';
+import { Money } from '../../components/Money';
 import { NumberInput } from '../../components/NumberInput';
 import { calculateQuote, getActiveLaborMinutes } from '../../lib/calculations';
 import { createId } from '../../lib/id';
@@ -189,12 +190,13 @@ export function NewQuotePage({
               suffix="zł"
               onValueChange={(value) => updateInput('extrasCost', value)}
             />
-            <NumberInput
-              label="Energia"
-              value={input.energyCost}
-              suffix="zł"
-              onValueChange={(value) => updateInput('energyCost', value)}
-            />
+          </div>
+
+          <div className="calculatedLine">
+            <span>Energia wyliczona automatycznie</span>
+            <strong>
+              <Money value={quoteState.result?.energyCost ?? 0} />
+            </strong>
           </div>
 
           <label className="field">
@@ -314,7 +316,8 @@ function createInitialInput(recipeId: string, settings: AppSettings): QuoteInput
     recipeId,
     packagingCost: 0,
     extrasCost: 0,
-    energyCost: settings.defaultEnergyCost,
+    energyBakingHourlyCost: settings.defaultEnergyBakingHourlyCost,
+    energyActivityHourlyCost: settings.defaultEnergyActivityHourlyCost,
     deliveryCost: settings.defaultDeliveryCost,
     includeDelivery: false,
     hourlyRate: settings.defaultHourlyRate,

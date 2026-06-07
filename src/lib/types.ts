@@ -47,7 +47,8 @@ export type QuoteInput = {
   recipeId: string;
   packagingCost: number;
   extrasCost: number;
-  energyCost: number;
+  energyBakingHourlyCost: number;
+  energyActivityHourlyCost: number;
   deliveryCost: number;
   includeDelivery: boolean;
   hourlyRate: number;
@@ -92,7 +93,8 @@ export type AppSettings = {
   defaultProfitMode: ProfitMode;
   defaultProfitPercent: number;
   defaultProfitFixed: number;
-  defaultEnergyCost: number;
+  defaultEnergyBakingHourlyCost: number;
+  defaultEnergyActivityHourlyCost: number;
   defaultDeliveryCost: number;
   defaultRoundTo: RoundTo;
 };
