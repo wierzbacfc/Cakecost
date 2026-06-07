@@ -85,7 +85,7 @@ export function SettingsPage({
             onValueChange={(value) => updateSettings('defaultHourlyRate', value)}
           />
           <NumberInput
-            label="Zapas"
+            label="Dodatkowe koszty (%)"
             value={settings.defaultSafetyMarginPercent}
             suffix="%"
             onValueChange={(value) => updateSettings('defaultSafetyMarginPercent', value)}

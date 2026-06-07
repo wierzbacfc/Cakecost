@@ -167,7 +167,7 @@ export function calculateQuote(
   assertNonNegative(input.extrasCost, 'Koszt dodatków');
   assertNonNegative(input.energyCost, 'Koszt energii');
   assertNonNegative(input.hourlyRate, 'Stawka godzinowa');
-  assertNonNegative(input.safetyMarginPercent, 'Zapas procentowy');
+  assertNonNegative(input.safetyMarginPercent, 'Dodatkowe koszty (%)');
   assertNonNegative(input.profitPercent ?? 0, 'Zysk procentowy');
   assertNonNegative(input.profitFixed ?? 0, 'Zysk kwotowy');
 

@@ -45,7 +45,10 @@ export function QuoteResultCard({
         <CostRow label="Energia" value={result.energyCost} />
         <CostRow label="Praca" value={result.laborCost} />
         <CostRow label="Koszt bazowy" value={result.baseCost} emphasized />
-        <CostRow label={`Zapas ${input.safetyMarginPercent}%`} value={result.safetyMarginValue} />
+        <CostRow
+          label={`Dodatkowe koszty (${input.safetyMarginPercent}%)`}
+          value={result.safetyMarginValue}
+        />
         <CostRow label="Łączny koszt" value={result.totalCost} emphasized />
         <CostRow label="Zysk" value={result.profitValue} />
         <CostRow label="Cena dokładna" value={result.exactPrice} />

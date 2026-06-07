@@ -68,7 +68,7 @@ describe('calculations', () => {
     expect(result.errors[0].message).toContain('Nie można przeliczyć ml na g');
   });
 
-  it('liczy pełną wycenę z pracą, zapasem, zyskiem i ceną za porcję', () => {
+  it('liczy pełną wycenę z pracą, dodatkowymi kosztami, zyskiem i ceną za porcję', () => {
     const result = calculateQuote(recipe, [flour, milk], {
       recipeId: recipe.id,
       packagingCost: 10,

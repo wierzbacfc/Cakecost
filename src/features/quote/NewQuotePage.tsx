@@ -1,8 +1,8 @@
-import { Calculator, Save } from 'lucide-react';
+import { Calculator, Clock, Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyState } from '../../components/EmptyState';
 import { NumberInput } from '../../components/NumberInput';
-import { calculateQuote } from '../../lib/calculations';
+import { calculateQuote, getActiveLaborMinutes } from '../../lib/calculations';
 import { createId } from '../../lib/id';
 import type {
   AppSettings,
@@ -42,6 +42,10 @@ export function NewQuotePage({
   }, [firstRecipeId, input.recipeId, recipes]);
 
   const selectedRecipe = recipes.find((recipe) => recipe.id === input.recipeId);
+  const selectedRecipeActiveMinutes = selectedRecipe ? getActiveLaborMinutes(selectedRecipe) : 0;
+  const selectedRecipeTotalMinutes = selectedRecipe
+    ? selectedRecipeActiveMinutes + selectedRecipe.bakingTimeMinutes
+    : 0;
 
   const quoteState = useMemo(() => {
     if (!selectedRecipe) {
@@ -138,6 +142,26 @@ export function NewQuotePage({
             </select>
           </label>
 
+          {selectedRecipe ? (
+            <div className="recipeTimePanel" aria-label="Parametry czasowe przepisu">
+              <div className="recipeTimeHeader">
+                <Clock size={20} />
+                <div>
+                  <span>Parametry czasowe przepisu</span>
+                  <strong>
+                    {selectedRecipeActiveMinutes} min pracy / {selectedRecipeTotalMinutes} min łącznie
+                  </strong>
+                </div>
+              </div>
+              <div className="recipeTimeGrid">
+                <TimeMetric label="Przygotowanie" value={selectedRecipe.preparationTimeMinutes} />
+                <TimeMetric label="Pieczenie" value={selectedRecipe.bakingTimeMinutes} />
+                <TimeMetric label="Dekoracja" value={selectedRecipe.decorationTimeMinutes} />
+                <TimeMetric label="Sprzątanie" value={selectedRecipe.cleaningTimeMinutes} />
+              </div>
+            </div>
+          ) : null}
+
           <div className="threeColumn">
             <NumberInput
               label="Opakowanie"
@@ -167,7 +191,7 @@ export function NewQuotePage({
               onValueChange={(value) => updateInput('hourlyRate', value)}
             />
             <NumberInput
-              label="Zapas"
+              label="Dodatkowe koszty (%)"
               value={input.safetyMarginPercent}
               suffix="%"
               onValueChange={(value) => updateInput('safetyMarginPercent', value)}
@@ -238,6 +262,15 @@ export function NewQuotePage({
           />
         ) : null}
       </div>
+    </div>
+  );
+}
+
+function TimeMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="recipeTimeMetric">
+      <span>{label}</span>
+      <strong>{value} min</strong>
     </div>
   );
 }
