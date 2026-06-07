@@ -1,0 +1,108 @@
+import { describe, expect, it } from 'vitest';
+import {
+  calculateIngredientUnitPrice,
+  calculateQuote,
+  calculateRecipeIngredientsCost,
+  roundPrice
+} from './calculations';
+import { createSampleData } from './sampleData';
+import type { Ingredient, Recipe } from './types';
+
+const flour: Ingredient = {
+  id: 'flour',
+  name: 'Mąka pszenna',
+  packagePrice: 4.5,
+  packageAmount: 1,
+  unit: 'kg',
+  unitPrice: calculateIngredientUnitPrice(4.5, 1, 'kg'),
+  updatedAt: '2026-01-01T00:00:00.000Z'
+};
+
+const milk: Ingredient = {
+  id: 'milk',
+  name: 'Mleko',
+  packagePrice: 4,
+  packageAmount: 1,
+  unit: 'l',
+  unitPrice: calculateIngredientUnitPrice(4, 1, 'l'),
+  updatedAt: '2026-01-01T00:00:00.000Z'
+};
+
+const recipe: Recipe = {
+  id: 'recipe',
+  name: 'Testowe ciasto',
+  category: 'ciasto',
+  servings: 10,
+  finalWeightGrams: 1000,
+  preparationTimeMinutes: 60,
+  bakingTimeMinutes: 40,
+  decorationTimeMinutes: 30,
+  cleaningTimeMinutes: 30,
+  ingredients: [{ ingredientId: 'flour', amount: 100, unit: 'g' }],
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z'
+};
+
+describe('calculations', () => {
+  it('liczy cenę jednostkową dla kg, g, l, ml i sztuk', () => {
+    expect(calculateIngredientUnitPrice(4.5, 1, 'kg')).toBeCloseTo(0.0045);
+    expect(calculateIngredientUnitPrice(8.99, 200, 'g')).toBeCloseTo(0.04495);
+    expect(calculateIngredientUnitPrice(7.5, 0.5, 'l')).toBeCloseTo(0.015);
+    expect(calculateIngredientUnitPrice(12, 10, 'szt')).toBeCloseTo(1.2);
+  });
+
+  it('zaokrągla ceny w górę według ustawień', () => {
+    expect(roundPrice(246.33, 1)).toBe(247);
+    expect(roundPrice(246.33, 5)).toBe(250);
+    expect(roundPrice(246.33, 10)).toBe(250);
+    expect(roundPrice(251.24, 10)).toBe(260);
+  });
+
+  it('zwraca błąd przy niezgodnych jednostkach', () => {
+    const result = calculateRecipeIngredientsCost(
+      [{ ingredientId: 'flour', amount: 200, unit: 'ml' }],
+      [flour]
+    );
+
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].message).toContain('Nie można przeliczyć ml na g');
+  });
+
+  it('liczy pełną wycenę z pracą, zapasem, zyskiem i ceną za porcję', () => {
+    const result = calculateQuote(recipe, [flour, milk], {
+      recipeId: recipe.id,
+      packagingCost: 10,
+      extrasCost: 5,
+      energyCost: 5,
+      hourlyRate: 30,
+      safetyMarginPercent: 10,
+      profitMode: 'fixed',
+      profitFixed: 20,
+      profitPercent: 30,
+      roundTo: 5
+    });
+
+    expect(result.ingredientsCost).toBe(1);
+    expect(result.laborCost).toBe(60);
+    expect(result.baseCost).toBe(81);
+    expect(result.safetyMarginValue).toBe(9);
+    expect(result.totalCost).toBe(90);
+    expect(result.exactPrice).toBe(110);
+    expect(result.suggestedPrice).toBe(110);
+    expect(result.pricePerServing).toBe(11);
+    expect(result.pricePerKg).toBe(110);
+  });
+
+  it('ma spójny katalog startowy składników i przepisów', () => {
+    const data = createSampleData('2026-01-01T00:00:00.000Z');
+
+    expect(data.ingredients.length).toBeGreaterThanOrEqual(30);
+    expect(data.recipes).toHaveLength(10);
+
+    data.recipes.forEach((sampleRecipe) => {
+      const cost = calculateRecipeIngredientsCost(sampleRecipe, data.ingredients);
+      expect(cost.errors, sampleRecipe.name).toHaveLength(0);
+      expect(cost.total, sampleRecipe.name).toBeGreaterThan(0);
+    });
+  });
+});

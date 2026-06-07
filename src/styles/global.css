@@ -1,0 +1,1172 @@
+:root {
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg: #f7f8f7;
+  --surface: #ffffff;
+  --surface-strong: #fff7ed;
+  --ink: #27313a;
+  --muted: #65717d;
+  --line: #dfe5e2;
+  --accent: #b83256;
+  --accent-dark: #8f243f;
+  --secondary: #0f766e;
+  --secondary-dark: #115e59;
+  --amber: #b45309;
+  --danger: #b42318;
+  --danger-bg: #fff1f0;
+  --good: #14735f;
+  --good-bg: #eefcf7;
+  --warning-bg: #fff8db;
+  --shadow: 0 12px 30px rgba(39, 49, 58, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(184, 50, 86, 0.08), transparent 28rem),
+    linear-gradient(180deg, #ffffff 0, var(--bg) 20rem);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.68rem 0.78rem;
+  color: var(--ink);
+  background: #fff;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(184, 50, 86, 0.16);
+}
+
+input[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.appShell {
+  min-height: 100vh;
+  padding-bottom: 5.6rem;
+}
+
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem clamp(1rem, 4vw, 2.4rem);
+  border-bottom: 1px solid rgba(223, 229, 226, 0.88);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.72rem;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brand strong {
+  font-size: 1rem;
+}
+
+.brand small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.brandMark {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--accent);
+  background: var(--surface-strong);
+  box-shadow: inset 0 0 0 1px rgba(184, 50, 86, 0.16);
+}
+
+.topNav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.navButton,
+.bottomNavButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+}
+
+.navButton {
+  min-height: 40px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.navButton.active,
+.bottomNavButton.active {
+  color: var(--accent);
+  border-color: rgba(184, 50, 86, 0.18);
+  background: rgba(184, 50, 86, 0.08);
+}
+
+.mainContent {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: clamp(1rem, 3.2vw, 2.4rem);
+}
+
+.pageStack {
+  display: grid;
+  gap: 1rem;
+}
+
+.pageHeader,
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dashboardHeader {
+  min-height: 136px;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(184, 50, 86, 0.1), rgba(15, 118, 110, 0.1)),
+    #fff;
+}
+
+.eyebrow {
+  margin-bottom: 0.22rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: clamp(1.7rem, 4.5vw, 2.35rem);
+  line-height: 1.08;
+}
+
+h2 {
+  font-size: 1.12rem;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.button,
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: 750;
+  transition:
+    transform 120ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.button {
+  min-height: 44px;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  padding: 0.68rem 0.95rem;
+}
+
+.button:hover,
+.iconButton:hover,
+.actionTile:hover {
+  transform: translateY(-1px);
+}
+
+.buttonPrimary {
+  color: #fff;
+  background: var(--accent);
+}
+
+.buttonPrimary:hover {
+  background: var(--accent-dark);
+}
+
+.buttonSecondary {
+  color: var(--secondary-dark);
+  border-color: rgba(15, 118, 110, 0.28);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.buttonGhost {
+  color: var(--ink);
+  border-color: var(--line);
+  background: #fff;
+}
+
+.buttonDanger {
+  color: #fff;
+  background: var(--danger);
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: #fff;
+}
+
+.iconButton.danger {
+  color: var(--danger);
+}
+
+.statsGrid,
+.actionGrid,
+.metricGrid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.statsGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.statTile,
+.actionTile,
+.metricTile,
+.panel,
+.resultPanel,
+.listItem,
+.emptyState {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.statTile {
+  padding: 1rem;
+}
+
+.statTile span,
+.metricTile span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.statTile strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--secondary-dark);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.actionGrid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.actionTile {
+  min-height: 108px;
+  border: 1px solid var(--line);
+  padding: 1rem;
+  color: var(--ink);
+  background: #fff;
+}
+
+.actionTile span {
+  display: block;
+  margin-top: 0.65rem;
+  font-weight: 800;
+}
+
+.panel,
+.resultPanel,
+.emptyState {
+  padding: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.formAnchor {
+  scroll-margin-top: 5.5rem;
+}
+
+.formHeader,
+.subSectionHeader,
+.resultHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.fieldLabel {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 750;
+}
+
+.fieldError {
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.inputShell {
+  position: relative;
+  display: block;
+}
+
+.inputShell input {
+  padding-right: 4.3rem;
+}
+
+.inputSuffix {
+  position: absolute;
+  top: 50%;
+  right: 0.78rem;
+  max-width: 3.2rem;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.84rem;
+  text-overflow: ellipsis;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.twoColumn,
+.threeColumn,
+.fourColumn {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.twoColumn {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.threeColumn {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fourColumn {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.calculatedLine,
+.costRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 8px;
+}
+
+.calculatedLine {
+  padding: 0.8rem;
+  color: var(--secondary-dark);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.subSection {
+  display: grid;
+  gap: 0.85rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.recipeIngredientList {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.recipeIngredientRow {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(7rem, 0.5fr) minmax(6.5rem, 0.35fr) minmax(9rem, 0.45fr) auto;
+  gap: 0.65rem;
+  align-items: end;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fbfcfc;
+}
+
+.lineCost {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 44px;
+  padding: 0.42rem 0;
+}
+
+.lineCost span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.lineCost small {
+  color: var(--danger);
+  font-size: 0.78rem;
+}
+
+.rowDelete {
+  margin-bottom: 0.08rem;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 0.7rem;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.searchBox input {
+  border: 0;
+  box-shadow: none;
+}
+
+.listGrid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.listItem {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.listItemMain {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.listItemMain h2,
+.listItemMain p,
+.listItemMain small {
+  overflow-wrap: anywhere;
+}
+
+.listItemMain p,
+.listItemMain small {
+  color: var(--muted);
+}
+
+.listItemMain strong {
+  color: var(--secondary-dark);
+}
+
+.itemActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.45rem;
+}
+
+.miniMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.miniMetrics span {
+  border-radius: 8px;
+  padding: 0.32rem 0.48rem;
+  color: var(--muted);
+  background: #f1f5f4;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.quoteLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(22rem, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.segmentedControl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.25rem;
+  background: #f1f5f4;
+}
+
+.segmentedControl button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+  font-weight: 800;
+}
+
+.segmentedControl button.active {
+  color: var(--accent);
+  background: #fff;
+  box-shadow: 0 5px 14px rgba(39, 49, 58, 0.08);
+}
+
+.resultPanel {
+  display: grid;
+  gap: 1rem;
+  border-color: rgba(184, 50, 86, 0.25);
+}
+
+.resultPrice {
+  color: var(--accent);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.resultBreakdown {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.costRow {
+  padding: 0.62rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.costRow.emphasized {
+  border-bottom: 0;
+  padding: 0.72rem 0.78rem;
+  color: var(--secondary-dark);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.formulaBox,
+.customPriceBox,
+.warning {
+  border-radius: 8px;
+  padding: 0.78rem;
+}
+
+.formulaBox {
+  color: var(--muted);
+  background: #f1f5f4;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.metricTile {
+  padding: 0.82rem;
+}
+
+.metricTile strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--secondary-dark);
+}
+
+.warning {
+  display: flex;
+  gap: 0.62rem;
+  align-items: flex-start;
+  font-weight: 750;
+  white-space: pre-line;
+}
+
+.warningSoft {
+  color: #7a4b00;
+  background: var(--warning-bg);
+}
+
+.warningGood {
+  color: var(--good);
+  background: var(--good-bg);
+}
+
+.warningDanger {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.customPriceBox {
+  display: flex;
+  gap: 0.62rem;
+  color: var(--secondary-dark);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.customPriceBox div,
+.warningDanger div {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  gap: 0.7rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.emptyState h2 {
+  color: var(--ink);
+}
+
+.emptyStateIcon {
+  color: var(--accent);
+}
+
+.emptyStateAction {
+  margin-top: 0.2rem;
+}
+
+.buttonRow,
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(39, 49, 58, 0.42);
+}
+
+.dialog {
+  display: grid;
+  width: min(420px, 100%);
+  gap: 0.85rem;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(39, 49, 58, 0.24);
+}
+
+.dialogIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.dialog p {
+  margin-top: 0.3rem;
+  color: var(--muted);
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 70;
+  max-width: min(360px, calc(100vw - 2rem));
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  color: #fff;
+  background: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.bottomNav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  display: none;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.1rem;
+  border-top: 1px solid var(--line);
+  padding: 0.35rem max(0.35rem, env(safe-area-inset-left)) max(0.35rem, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+}
+
+.bottomNavButton {
+  min-height: 48px;
+  padding: 0.3rem 0.2rem;
+  font-size: 0.68rem;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.bottomNavButton span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 980px) {
+  .topNav {
+    display: none;
+  }
+
+  .bottomNav {
+    display: grid;
+  }
+
+  .quoteLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .actionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .mainContent {
+    padding: 1rem;
+  }
+
+  .pageHeader,
+  .dashboardHeader,
+  .formHeader,
+  .resultHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .statsGrid,
+  .twoColumn,
+  .threeColumn,
+  .fourColumn,
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .recipeIngredientRow {
+    grid-template-columns: 1fr;
+  }
+
+  .rowDelete {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .listItem {
+    flex-direction: column;
+  }
+
+  .itemActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .button,
+  .buttonRow .button,
+  .formActions .button {
+    width: 100%;
+  }
+
+  .dialogActions {
+    flex-direction: column-reverse;
+  }
+}
+
+@media (min-width: 761px) {
+  .appShell {
+    padding-bottom: 0;
+  }
+
+  .panel,
+  .resultPanel,
+  .emptyState,
+  .listItem {
+    padding: 1.15rem;
+  }
+
+  .listGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .searchBox,
+  .pageHeader,
+  .dashboardHeader,
+  .quoteLayout {
+    max-width: 100%;
+  }
+
+  .quoteLayout .resultPanel {
+    position: sticky;
+    top: 5.8rem;
+  }
+}
+
+@media (min-width: 1180px) {
+  .mainContent {
+    width: min(1280px, 100%);
+  }
+
+  .pageStack {
+    gap: 1.2rem;
+  }
+
+  .quoteLayout {
+    grid-template-columns: minmax(0, 0.95fr) minmax(25rem, 0.8fr);
+    gap: 1.2rem;
+  }
+
+  .listGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .listItem {
+    min-height: 150px;
+  }
+
+  .actionTile {
+    min-height: 118px;
+  }
+}
+
+@media (max-width: 1120px) and (min-width: 761px) {
+  .recipeIngredientRow {
+    grid-template-columns: minmax(14rem, 1fr) minmax(7rem, 0.45fr) minmax(6rem, 0.35fr) auto;
+  }
+
+  .recipeIngredientRow .lineCost {
+    grid-column: 1 / -1;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding-top: 0.7rem;
+  }
+
+  .recipeIngredientRow .lineCost small {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 980px) {
+  .topBar {
+    padding: 0.72rem 1rem;
+  }
+
+  .brandMark {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .mainContent {
+    padding-bottom: 6.3rem;
+  }
+
+  .toast {
+    right: 0.75rem;
+    bottom: 5.4rem;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: linear-gradient(180deg, #ffffff 0, var(--bg) 15rem);
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .topBar {
+    gap: 0.7rem;
+  }
+
+  .brand {
+    gap: 0.6rem;
+  }
+
+  .brand strong {
+    font-size: 0.95rem;
+  }
+
+  .brand small {
+    font-size: 0.72rem;
+  }
+
+  .pageStack {
+    gap: 0.85rem;
+  }
+
+  .dashboardHeader,
+  .panel,
+  .resultPanel,
+  .emptyState,
+  .listItem {
+    padding: 0.9rem;
+  }
+
+  .dashboardHeader {
+    min-height: auto;
+  }
+
+  h1 {
+    font-size: 1.55rem;
+  }
+
+  h2 {
+    font-size: 1.03rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .statTile {
+    padding: 0.72rem;
+  }
+
+  .statTile span {
+    font-size: 0.75rem;
+  }
+
+  .statTile strong {
+    font-size: 1.45rem;
+  }
+
+  .actionGrid {
+    gap: 0.65rem;
+  }
+
+  .actionTile {
+    min-height: 92px;
+    padding: 0.8rem 0.65rem;
+  }
+
+  .actionTile span {
+    margin-top: 0.42rem;
+    font-size: 0.9rem;
+  }
+
+  .formGrid {
+    gap: 0.78rem;
+  }
+
+  .subSectionHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .recipeIngredientRow {
+    gap: 0.7rem;
+    padding: 0.8rem;
+  }
+
+  .lineCost {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    min-height: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 0.65rem;
+  }
+
+  .lineCost strong {
+    justify-self: end;
+  }
+
+  .lineCost small {
+    grid-column: 1 / -1;
+  }
+
+  .resultPrice {
+    white-space: normal;
+  }
+
+  .costRow,
+  .calculatedLine {
+    align-items: flex-start;
+  }
+
+  .costRow strong,
+  .calculatedLine strong {
+    text-align: right;
+  }
+
+  .metricTile {
+    padding: 0.75rem;
+  }
+
+  .bottomNav {
+    gap: 0;
+    padding-top: 0.3rem;
+  }
+
+  .bottomNavButton {
+    min-height: 52px;
+    border-radius: 7px;
+    font-size: 0.64rem;
+  }
+
+  .bottomNavButton svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+@media (max-width: 420px) {
+  .mainContent {
+    padding: 0.75rem;
+    padding-bottom: 6.3rem;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .actionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionTile {
+    min-height: 68px;
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+
+  .actionTile span {
+    margin-top: 0;
+  }
+
+  .button {
+    padding-right: 0.8rem;
+    padding-left: 0.8rem;
+  }
+
+  .bottomNavButton span {
+    display: none;
+  }
+}
