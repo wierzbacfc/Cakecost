@@ -43,6 +43,7 @@ export function QuoteResultCard({
         <CostRow label="Opakowanie" value={result.packagingCost} />
         <CostRow label="Dodatki" value={result.extrasCost} />
         <CostRow label="Energia" value={result.energyCost} />
+        <CostRow label="Dowóz" value={result.deliveryCost} />
         <CostRow label="Praca" value={result.laborCost} />
         <CostRow label="Koszt bazowy" value={result.baseCost} emphasized />
         <CostRow
@@ -56,8 +57,8 @@ export function QuoteResultCard({
 
       <div className="formulaBox">
         <p>
-          Koszt bazowy = składniki + opakowanie + dodatki + energia + praca. Cena sugerowana =
-          cena dokładna zaokrąglona w górę do {input.roundTo} zł.
+          Koszt bazowy = składniki + opakowanie + dodatki + energia + dowóz + praca.
+          Cena sugerowana = cena dokładna zaokrąglona w górę do {input.roundTo} zł.
         </p>
       </div>
 

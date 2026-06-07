@@ -119,6 +119,10 @@ function normalizeSettings(settings?: Partial<AppSettings>): AppSettings {
       settings?.defaultEnergyCost,
       defaultSettings.defaultEnergyCost
     )),
+    defaultDeliveryCost: roundCurrency(nonNegativeNumber(
+      settings?.defaultDeliveryCost,
+      defaultSettings.defaultDeliveryCost
+    )),
     defaultRoundTo: isRoundTo(settings?.defaultRoundTo)
       ? settings.defaultRoundTo
       : defaultSettings.defaultRoundTo

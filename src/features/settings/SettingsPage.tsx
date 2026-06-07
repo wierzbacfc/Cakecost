@@ -77,7 +77,7 @@ export function SettingsPage({
       </section>
 
       <section className="panel formGrid">
-        <div className="threeColumn">
+        <div className="fourColumn">
           <NumberInput
             label="Stawka godzinowa"
             value={settings.defaultHourlyRate}
@@ -95,6 +95,12 @@ export function SettingsPage({
             value={settings.defaultEnergyCost}
             suffix="zł"
             onValueChange={(value) => updateSettings('defaultEnergyCost', value)}
+          />
+          <NumberInput
+            label="Koszt dowozu"
+            value={settings.defaultDeliveryCost}
+            suffix="zł"
+            onValueChange={(value) => updateSettings('defaultDeliveryCost', value)}
           />
         </div>
 

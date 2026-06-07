@@ -48,6 +48,8 @@ export type QuoteInput = {
   packagingCost: number;
   extrasCost: number;
   energyCost: number;
+  deliveryCost: number;
+  includeDelivery: boolean;
   hourlyRate: number;
   safetyMarginPercent: number;
   profitMode: ProfitMode;
@@ -62,6 +64,7 @@ export type QuoteResult = {
   packagingCost: number;
   extrasCost: number;
   energyCost: number;
+  deliveryCost: number;
   baseCost: number;
   safetyMarginValue: number;
   totalCost: number;
@@ -89,6 +92,7 @@ export type AppSettings = {
   defaultProfitPercent: number;
   defaultProfitFixed: number;
   defaultEnergyCost: number;
+  defaultDeliveryCost: number;
   defaultRoundTo: RoundTo;
 };
 

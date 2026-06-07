@@ -183,6 +183,26 @@ export function NewQuotePage({
             />
           </div>
 
+          <label className="field">
+            <span className="fieldLabel">Dowóz</span>
+            <div className="segmentedControl" aria-label="Dowóz">
+              <button
+                className={!input.includeDelivery ? 'active' : ''}
+                type="button"
+                onClick={() => updateInput('includeDelivery', false)}
+              >
+                Bez dowozu
+              </button>
+              <button
+                className={input.includeDelivery ? 'active' : ''}
+                type="button"
+                onClick={() => updateInput('includeDelivery', true)}
+              >
+                Z dowozem (+{input.deliveryCost} zł)
+              </button>
+            </div>
+          </label>
+
           <div className="threeColumn">
             <NumberInput
               label="Stawka godzinowa"
@@ -281,6 +301,8 @@ function createInitialInput(recipeId: string, settings: AppSettings): QuoteInput
     packagingCost: 0,
     extrasCost: 0,
     energyCost: settings.defaultEnergyCost,
+    deliveryCost: settings.defaultDeliveryCost,
+    includeDelivery: false,
     hourlyRate: settings.defaultHourlyRate,
     safetyMarginPercent: settings.defaultSafetyMarginPercent,
     profitMode: settings.defaultProfitMode,

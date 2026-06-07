@@ -166,6 +166,7 @@ export function calculateQuote(
   assertNonNegative(input.packagingCost, 'Koszt opakowania');
   assertNonNegative(input.extrasCost, 'Koszt dodatków');
   assertNonNegative(input.energyCost, 'Koszt energii');
+  assertNonNegative(input.deliveryCost, 'Koszt dowozu');
   assertNonNegative(input.hourlyRate, 'Stawka godzinowa');
   assertNonNegative(input.safetyMarginPercent, 'Dodatkowe koszty (%)');
   assertNonNegative(input.profitPercent ?? 0, 'Zysk procentowy');
@@ -178,11 +179,13 @@ export function calculateQuote(
   }
 
   const laborCost = calculateLaborCost(recipe, input.hourlyRate);
+  const deliveryCost = input.includeDelivery ? roundCurrency(input.deliveryCost) : 0;
   const baseCost = roundCurrency(
     ingredientsCost.total +
       input.packagingCost +
       input.extrasCost +
       input.energyCost +
+      deliveryCost +
       laborCost
   );
   const safetyMarginValue = roundCurrency((baseCost * input.safetyMarginPercent) / 100);
@@ -201,6 +204,7 @@ export function calculateQuote(
     packagingCost: roundCurrency(input.packagingCost),
     extrasCost: roundCurrency(input.extrasCost),
     energyCost: roundCurrency(input.energyCost),
+    deliveryCost,
     baseCost,
     safetyMarginValue,
     totalCost,

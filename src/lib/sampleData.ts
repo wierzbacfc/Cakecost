@@ -8,6 +8,7 @@ export const defaultSettings: AppSettings = {
   defaultProfitPercent: 30,
   defaultProfitFixed: 80,
   defaultEnergyCost: 5,
+  defaultDeliveryCost: 20,
   defaultRoundTo: 5
 };
 

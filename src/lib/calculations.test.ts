@@ -74,6 +74,8 @@ describe('calculations', () => {
       packagingCost: 10,
       extrasCost: 5,
       energyCost: 5,
+      deliveryCost: 25,
+      includeDelivery: false,
       hourlyRate: 30,
       safetyMarginPercent: 10,
       profitMode: 'fixed',
@@ -91,6 +93,29 @@ describe('calculations', () => {
     expect(result.suggestedPrice).toBe(110);
     expect(result.pricePerServing).toBe(11);
     expect(result.pricePerKg).toBe(110);
+  });
+
+  it('dolicza koszt dowozu tylko po wybraniu opcji z dowozem', () => {
+    const result = calculateQuote(recipe, [flour], {
+      recipeId: recipe.id,
+      packagingCost: 10,
+      extrasCost: 5,
+      energyCost: 5,
+      deliveryCost: 25,
+      includeDelivery: true,
+      hourlyRate: 30,
+      safetyMarginPercent: 10,
+      profitMode: 'fixed',
+      profitFixed: 20,
+      profitPercent: 30,
+      roundTo: 5
+    });
+
+    expect(result.deliveryCost).toBe(25);
+    expect(result.baseCost).toBe(106);
+    expect(result.safetyMarginValue).toBe(11);
+    expect(result.totalCost).toBe(117);
+    expect(result.suggestedPrice).toBe(140);
   });
 
   it('ma spójny katalog startowy składników i przepisów', () => {
