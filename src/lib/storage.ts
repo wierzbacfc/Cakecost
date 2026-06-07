@@ -11,6 +11,7 @@ import type {
   AppSettings,
   Ingredient,
   ProfitMode,
+  QuoteHistoryItem,
   Recipe,
   RecipeCategory,
   RoundTo,
@@ -82,12 +83,14 @@ export function normalizeAppData(value: Partial<AppDataExport>): AppData {
   const recipes = Array.isArray(value.recipes)
     ? value.recipes.map((recipe) => normalizeRecipe(recipe, now)).filter(Boolean)
     : [];
-  const history = Array.isArray(value.history) ? value.history : [];
+  const history = Array.isArray(value.history)
+    ? value.history.map((item) => normalizeHistoryItem(item, now)).filter(Boolean)
+    : [];
 
   return {
     ingredients: ingredients as Ingredient[],
     recipes: recipes as Recipe[],
-    history,
+    history: history as QuoteHistoryItem[],
     settings
   };
 }
@@ -184,6 +187,34 @@ function normalizeRecipe(value: Partial<Recipe>, fallbackDate: string): Recipe |
     ingredients,
     createdAt: value.createdAt ?? fallbackDate,
     updatedAt: value.updatedAt ?? fallbackDate
+  };
+}
+
+function normalizeHistoryItem(
+  value: Partial<QuoteHistoryItem>,
+  fallbackDate: string
+): QuoteHistoryItem | null {
+  if (!value.id || !value.recipeId || !value.recipeName || !value.result || !value.input) {
+    return null;
+  }
+
+  const deliveryCost = roundCurrency(nonNegativeNumber(value.input.deliveryCost, 0));
+
+  return {
+    id: value.id,
+    recipeId: value.recipeId,
+    recipeName: value.recipeName,
+    quoteName: value.quoteName?.trim() || value.recipeName,
+    date: value.date ?? fallbackDate,
+    result: {
+      ...value.result,
+      deliveryCost: roundCurrency(nonNegativeNumber(value.result.deliveryCost, 0))
+    },
+    input: {
+      ...value.input,
+      deliveryCost,
+      includeDelivery: value.input.includeDelivery === true
+    }
   };
 }
 

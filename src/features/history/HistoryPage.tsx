@@ -1,4 +1,4 @@
-import { History, Trash2 } from 'lucide-react';
+import { Check, Edit3, History, Trash2, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { EmptyState } from '../../components/EmptyState';
@@ -9,14 +9,32 @@ import type { QuoteHistoryItem } from '../../lib/types';
 type HistoryPageProps = {
   history: QuoteHistoryItem[];
   onDelete: (itemId: string) => void;
+  onRename: (itemId: string, quoteName: string) => void;
 };
 
-export function HistoryPage({ history, onDelete }: HistoryPageProps) {
+export function HistoryPage({ history, onDelete, onRename }: HistoryPageProps) {
   const [deleteTarget, setDeleteTarget] = useState<QuoteHistoryItem | null>(null);
+  const [editingId, setEditingId] = useState('');
+  const [editingName, setEditingName] = useState('');
   const sortedHistory = useMemo(
     () => [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
     [history]
   );
+
+  function startRenaming(item: QuoteHistoryItem) {
+    setEditingId(item.id);
+    setEditingName(item.quoteName);
+  }
+
+  function cancelRenaming() {
+    setEditingId('');
+    setEditingName('');
+  }
+
+  function saveRenaming(item: QuoteHistoryItem) {
+    onRename(item.id, editingName);
+    cancelRenaming();
+  }
 
   return (
     <div className="pageStack">
@@ -34,8 +52,44 @@ export function HistoryPage({ history, onDelete }: HistoryPageProps) {
           {sortedHistory.map((item) => (
             <article className="listItem" key={item.id}>
               <div className="listItemMain">
-                <h2>{item.recipeName}</h2>
-                <p>{formatDate(item.date)}</p>
+                {editingId === item.id ? (
+                  <div className="historyNameEditor">
+                    <input
+                      value={editingName}
+                      aria-label="Nazwa wyceny"
+                      onChange={(event) => setEditingName(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          saveRenaming(item);
+                        }
+                        if (event.key === 'Escape') {
+                          cancelRenaming();
+                        }
+                      }}
+                    />
+                    <button
+                      className="iconButton"
+                      type="button"
+                      title="Zapisz nazwę"
+                      onClick={() => saveRenaming(item)}
+                    >
+                      <Check size={18} />
+                    </button>
+                    <button
+                      className="iconButton"
+                      type="button"
+                      title="Anuluj"
+                      onClick={cancelRenaming}
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                ) : (
+                  <h2>{item.quoteName}</h2>
+                )}
+                <p>
+                  {item.recipeName} · {formatDate(item.date)}
+                </p>
                 <div className="miniMetrics">
                   <span>
                     Koszt: <Money value={item.result.totalCost} />
@@ -49,6 +103,14 @@ export function HistoryPage({ history, onDelete }: HistoryPageProps) {
                 </div>
               </div>
               <div className="itemActions">
+                <button
+                  className="iconButton"
+                  type="button"
+                  title="Zmień nazwę wyceny"
+                  onClick={() => startRenaming(item)}
+                >
+                  <Edit3 size={18} />
+                </button>
                 <button
                   className="iconButton danger"
                   type="button"
@@ -66,7 +128,7 @@ export function HistoryPage({ history, onDelete }: HistoryPageProps) {
       <ConfirmDialog
         open={Boolean(deleteTarget)}
         title="Usunąć wycenę?"
-        message={`Wpis „${deleteTarget?.recipeName ?? ''}” zostanie usunięty z historii.`}
+        message={`Wpis „${deleteTarget?.quoteName ?? ''}” zostanie usunięty z historii.`}
         confirmLabel="Usuń"
         destructive
         onCancel={() => setDeleteTarget(null)}

@@ -80,6 +80,7 @@ export type QuoteHistoryItem = {
   id: string;
   recipeId: string;
   recipeName: string;
+  quoteName: string;
   date: string;
   result: QuoteResult;
   input: QuoteInput;

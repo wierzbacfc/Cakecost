@@ -89,6 +89,16 @@ export function App() {
     notify('Wpis usunięty.');
   }
 
+  function renameHistoryItem(itemId: string, quoteName: string) {
+    setData((current) => ({
+      ...current,
+      history: current.history.map((item) =>
+        item.id === itemId ? { ...item, quoteName: quoteName.trim() || item.recipeName } : item
+      )
+    }));
+    notify('Nazwa wyceny zapisana.');
+  }
+
   function updateSettings(settings: AppSettings) {
     setData((current) => ({
       ...current,
@@ -147,7 +157,11 @@ export function App() {
       ) : null}
 
       {activePage === 'history' ? (
-        <HistoryPage history={data.history} onDelete={deleteHistoryItem} />
+        <HistoryPage
+          history={data.history}
+          onDelete={deleteHistoryItem}
+          onRename={renameHistoryItem}
+        />
       ) : null}
 
       {activePage === 'settings' ? (

@@ -32,6 +32,7 @@ export function NewQuotePage({
 }: NewQuotePageProps) {
   const firstRecipeId = recipes[0]?.id ?? '';
   const [input, setInput] = useState<QuoteInput>(() => createInitialInput(firstRecipeId, settings));
+  const [quoteName, setQuoteName] = useState('');
   const [customerPrice, setCustomerPrice] = useState(0);
   const [savedMessage, setSavedMessage] = useState('');
 
@@ -79,6 +80,7 @@ export function NewQuotePage({
       id: createId('quote'),
       recipeId: selectedRecipe.id,
       recipeName: selectedRecipe.name,
+      quoteName: quoteName.trim() || selectedRecipe.name,
       date: new Date().toISOString(),
       result: quoteState.result,
       input: { ...input }
@@ -128,6 +130,18 @@ export function NewQuotePage({
 
       <div className="quoteLayout">
         <form className="panel formGrid">
+          <label className="field">
+            <span className="fieldLabel">Nazwa wyceny</span>
+            <input
+              value={quoteName}
+              placeholder={selectedRecipe ? `Np. ${selectedRecipe.name} dla Ani` : 'Np. tort dla Ani'}
+              onChange={(event) => {
+                setQuoteName(event.target.value);
+                setSavedMessage('');
+              }}
+            />
+          </label>
+
           <label className="field">
             <span className="fieldLabel">Przepis</span>
             <select
