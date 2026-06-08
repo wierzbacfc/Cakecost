@@ -78,12 +78,12 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
     setDraft((current) => ({
       ...current,
       ingredients: [
-        ...current.ingredients,
         {
           ingredientId: ingredient?.id ?? '',
           amount: 0,
           unit: ingredient ? getRecipeUnitForIngredient(ingredient) : 'g'
-        }
+        },
+        ...current.ingredients
       ]
     }));
   }
@@ -169,7 +169,7 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
       <div className="formHeader">
         <div>
           <p className="eyebrow">{recipe ? 'Edycja' : 'Nowy przepis'}</p>
-          <h2>{recipe ? recipe.name : 'Przepis'}</h2>
+          <h2 id="recipe-form-title">{recipe ? recipe.name : 'Przepis'}</h2>
         </div>
         <button className="iconButton" type="button" title="Zamknij" onClick={onCancel}>
           <X size={19} />

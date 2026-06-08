@@ -106,13 +106,21 @@ export function RecipesPage({
       ) : null}
 
       {(isAdding || editingRecipe) && (
-        <div ref={formRef} className="formAnchor">
-          <RecipeForm
-            recipe={editingRecipe ?? undefined}
-            ingredients={ingredients}
-            onSave={handleSave}
-            onCancel={closeForm}
-          />
+        <div className="dialogBackdrop recipeFormBackdrop" role="presentation">
+          <div
+            ref={formRef}
+            className="dialog recipeFormDialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="recipe-form-title"
+          >
+            <RecipeForm
+              recipe={editingRecipe ?? undefined}
+              ingredients={ingredients}
+              onSave={handleSave}
+              onCancel={closeForm}
+            />
+          </div>
         </div>
       )}
 
@@ -186,9 +194,12 @@ function RecipeCard({ recipe, ingredients, onEdit, onDuplicate, onDelete }: Reci
           <span>{activeMinutes} min pracy</span>
           <span>{recipe.bakingTimeMinutes} min pieczenia</span>
         </div>
-        <strong>
-          {cost.errors.length > 0 ? 'Koszt wymaga poprawek' : <Money value={cost.total} />}
-        </strong>
+        <div className="recipeCardCost">
+          <span>Koszt składników</span>
+          <strong>
+            {cost.errors.length > 0 ? 'Koszt wymaga poprawek' : <Money value={cost.total} />}
+          </strong>
+        </div>
       </div>
       <div className="itemActions">
         <button className="iconButton" type="button" title="Edytuj przepis" onClick={onEdit}>
