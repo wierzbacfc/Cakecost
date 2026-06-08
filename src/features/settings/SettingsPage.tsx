@@ -91,13 +91,13 @@ export function SettingsPage({
             onValueChange={(value) => updateSettings('defaultSafetyMarginPercent', value)}
           />
           <NumberInput
-            label="Energia pieczenia"
+            label="Koszt pieczenia"
             value={settings.defaultEnergyBakingHourlyCost}
             suffix="zł/h"
             onValueChange={(value) => updateSettings('defaultEnergyBakingHourlyCost', value)}
           />
           <NumberInput
-            label="Energia procesu"
+            label="Pozostały koszt mediów"
             value={settings.defaultEnergyActivityHourlyCost}
             suffix="zł/h"
             onValueChange={(value) => updateSettings('defaultEnergyActivityHourlyCost', value)}

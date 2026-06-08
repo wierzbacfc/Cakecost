@@ -159,8 +159,8 @@ export function calculateEnergyCost(
   bakingHourlyCost: number,
   activityHourlyCost: number
 ): number {
-  assertNonNegative(bakingHourlyCost, 'Energia pieczenia');
-  assertNonNegative(activityHourlyCost, 'Energia przygotowania, pieczenia i sprzątania');
+  assertNonNegative(bakingHourlyCost, 'Koszt pieczenia');
+  assertNonNegative(activityHourlyCost, 'Pozostały koszt mediów');
 
   const bakingCost = (recipe.bakingTimeMinutes / 60) * bakingHourlyCost;
   const activityCost = (getEnergyActivityMinutes(recipe) / 60) * activityHourlyCost;
@@ -183,8 +183,8 @@ export function calculateQuote(
 ): QuoteResult {
   assertNonNegative(input.packagingCost, 'Koszt opakowania');
   assertNonNegative(input.extrasCost, 'Koszt dodatków');
-  assertNonNegative(input.energyBakingHourlyCost, 'Energia pieczenia');
-  assertNonNegative(input.energyActivityHourlyCost, 'Energia przygotowania, pieczenia i sprzątania');
+  assertNonNegative(input.energyBakingHourlyCost, 'Koszt pieczenia');
+  assertNonNegative(input.energyActivityHourlyCost, 'Pozostały koszt mediów');
   assertNonNegative(input.deliveryCost, 'Koszt dowozu');
   assertNonNegative(input.hourlyRate, 'Stawka godzinowa');
   assertNonNegative(input.safetyMarginPercent, 'Dodatkowe koszty (%)');
