@@ -833,7 +833,7 @@ h3 {
 
 .resultPrice {
   color: var(--amber);
-  font-size: clamp(2.35rem, 8vw, 4rem);
+  font-size: clamp(3rem, 13vw, 5.2rem);
   line-height: 1;
   white-space: nowrap;
 }
@@ -851,15 +851,19 @@ h3 {
   align-content: center;
   border: 1px solid var(--line);
   border-radius: 8px;
-  min-height: 128px;
+  min-height: 148px;
   padding: 0.95rem 1rem;
   background: rgba(255, 255, 255, 0.88);
 }
 
-.resultValueTile span {
+.resultValueTile > span {
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 800;
+}
+
+.resultValueTile strong span {
+  font-size: inherit;
 }
 
 .resultValueTile.primary {
@@ -874,7 +878,7 @@ h3 {
 
 .resultValueTile.earning strong {
   color: var(--good);
-  font-size: clamp(2.35rem, 8vw, 4rem);
+  font-size: clamp(3rem, 13vw, 5.2rem);
   line-height: 1;
   white-space: nowrap;
 }
