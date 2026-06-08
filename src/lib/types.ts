@@ -70,6 +70,7 @@ export type QuoteResult = {
   safetyMarginValue: number;
   totalCost: number;
   profitValue: number;
+  totalEarnings: number;
   exactPrice: number;
   suggestedPrice: number;
   pricePerServing?: number;

@@ -31,11 +31,22 @@ export function QuoteResultCard({
       <div className="resultHeader">
         <div>
           <p className="eyebrow">{recipe.name}</p>
-          <h2>Cena sugerowana</h2>
+          <h2>Wynik wyceny</h2>
         </div>
-        <strong className="resultPrice">
-          <Money value={result.suggestedPrice} rounded />
-        </strong>
+        <div className="resultHeaderValues">
+          <div className="resultValueTile primary">
+            <span>Cena sugerowana</span>
+            <strong className="resultPrice">
+              <Money value={result.suggestedPrice} rounded />
+            </strong>
+          </div>
+          <div className="resultValueTile earning">
+            <span>Całkowity zarobek</span>
+            <strong>
+              <Money value={result.totalEarnings} />
+            </strong>
+          </div>
+        </div>
       </div>
 
       <div className="resultBreakdown">
@@ -52,6 +63,7 @@ export function QuoteResultCard({
         />
         <CostRow label="Łączny koszt" value={result.totalCost} emphasized />
         <CostRow label="Zysk" value={result.profitValue} />
+        <CostRow label="Całkowity zarobek" value={result.totalEarnings} emphasized />
         <CostRow label="Cena dokładna" value={result.exactPrice} />
       </div>
 

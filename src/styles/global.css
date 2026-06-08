@@ -828,6 +828,41 @@ h3 {
   white-space: nowrap;
 }
 
+.resultHeaderValues {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 0.65rem;
+  min-width: min(34rem, 100%);
+}
+
+.resultValueTile {
+  display: grid;
+  gap: 0.25rem;
+  align-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem 0.85rem;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.resultValueTile span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.resultValueTile.earning {
+  border-color: rgba(180, 83, 9, 0.2);
+  background: var(--amber-bg);
+}
+
+.resultValueTile.earning strong {
+  color: var(--amber);
+  font-size: clamp(1.35rem, 3.5vw, 2.1rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .resultBreakdown {
   display: grid;
   gap: 0.3rem;
@@ -1432,6 +1467,15 @@ h3 {
   }
 
   .resultPrice {
+    white-space: normal;
+  }
+
+  .resultHeaderValues {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+
+  .resultValueTile.earning strong {
     white-space: normal;
   }
 

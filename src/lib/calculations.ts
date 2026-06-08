@@ -218,6 +218,7 @@ export function calculateQuote(
     input.profitMode === 'percent'
       ? roundCurrency((totalCost * (input.profitPercent ?? 0)) / 100)
       : roundCurrency(input.profitFixed ?? 0);
+  const totalEarnings = roundCurrency(laborCost + profitValue);
   const exactPrice = roundCurrency(totalCost + profitValue);
   const suggestedPrice = roundPrice(exactPrice, input.roundTo);
   const activeHours = getActiveLaborMinutes(recipe) / 60;
@@ -233,6 +234,7 @@ export function calculateQuote(
     safetyMarginValue,
     totalCost,
     profitValue,
+    totalEarnings,
     exactPrice,
     suggestedPrice,
     pricePerServing:

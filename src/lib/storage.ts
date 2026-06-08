@@ -230,6 +230,10 @@ function normalizeHistoryItem(
     input.energyActivityHourlyCost,
     defaultSettings.defaultEnergyActivityHourlyCost
   ));
+  const totalEarnings = roundCurrency(nonNegativeNumber(
+    value.result.totalEarnings,
+    nonNegativeNumber(value.result.laborCost, 0) + nonNegativeNumber(value.result.profitValue, 0)
+  ));
 
   return {
     id: value.id,
@@ -239,7 +243,8 @@ function normalizeHistoryItem(
     date: value.date ?? fallbackDate,
     result: {
       ...value.result,
-      deliveryCost: roundCurrency(nonNegativeNumber(value.result.deliveryCost, 0))
+      deliveryCost: roundCurrency(nonNegativeNumber(value.result.deliveryCost, 0)),
+      totalEarnings
     },
     input: {
       ...value.input,

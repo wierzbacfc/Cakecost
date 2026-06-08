@@ -91,6 +91,7 @@ describe('calculations', () => {
     expect(result.baseCost).toBe(84);
     expect(result.safetyMarginValue).toBe(9);
     expect(result.totalCost).toBe(93);
+    expect(result.totalEarnings).toBe(80);
     expect(result.exactPrice).toBe(113);
     expect(result.suggestedPrice).toBe(115);
     expect(result.pricePerServing).toBe(12);
