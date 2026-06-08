@@ -39,12 +39,14 @@ export function QuoteResultCard({
             <strong className="resultPrice">
               <Money value={result.suggestedPrice} rounded />
             </strong>
+            <small>Kwota, którą warto zaproponować klientowi po zaokrągleniu.</small>
           </div>
           <div className="resultValueTile earning">
             <span>Całkowity zarobek</span>
             <strong>
               <Money value={result.totalEarnings} />
             </strong>
+            <small>Twoja praca plus zysk doliczony do wyceny.</small>
           </div>
         </div>
       </div>

@@ -833,7 +833,7 @@ h3 {
 
 .resultPrice {
   color: var(--amber);
-  font-size: clamp(3rem, 13vw, 5.2rem);
+  font-size: clamp(2.25rem, 8.8vw, 3.7rem);
   line-height: 1;
   white-space: nowrap;
 }
@@ -851,7 +851,7 @@ h3 {
   align-content: center;
   border: 1px solid var(--line);
   border-radius: 8px;
-  min-height: 148px;
+  min-height: 132px;
   padding: 0.95rem 1rem;
   background: rgba(255, 255, 255, 0.88);
 }
@@ -866,6 +866,13 @@ h3 {
   font-size: inherit;
 }
 
+.resultValueTile small {
+  max-width: 30ch;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
 .resultValueTile.primary {
   border-color: rgba(180, 83, 9, 0.2);
   background: var(--amber-bg);
@@ -878,7 +885,7 @@ h3 {
 
 .resultValueTile.earning strong {
   color: var(--good);
-  font-size: clamp(3rem, 13vw, 5.2rem);
+  font-size: clamp(2.25rem, 8.8vw, 3.7rem);
   line-height: 1;
   white-space: nowrap;
 }
