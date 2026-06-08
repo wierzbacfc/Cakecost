@@ -3,7 +3,8 @@ import {
   createEmptyData,
   createSampleData,
   defaultSettings,
-  mergeSampleCatalog
+  mergeSampleCatalog,
+  recipeSeedVersion
 } from './sampleData';
 import type {
   AppData,
@@ -21,6 +22,7 @@ import type {
 import { recipeCategories, units } from './types';
 
 const STORAGE_KEY = 'kalkulator-wypiekow:data:v1';
+const RECIPE_SEED_VERSION_KEY = 'kalkulator-wypiekow:recipe-seed-version';
 
 export function loadAppData(): AppData {
   if (typeof localStorage === 'undefined') {
@@ -32,14 +34,28 @@ export function loadAppData(): AppData {
   if (!raw) {
     const sampleData = createSampleData();
     saveAppData(sampleData);
+    localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
     return sampleData;
   }
 
   try {
-    return mergeSampleCatalog(normalizeAppData(JSON.parse(raw)));
+    const shouldReplaceRecipes = localStorage.getItem(RECIPE_SEED_VERSION_KEY) !== recipeSeedVersion;
+    const data = mergeSampleCatalog(normalizeAppData(JSON.parse(raw)), undefined, {
+      replaceRecipes: shouldReplaceRecipes
+    });
+
+    if (shouldReplaceRecipes) {
+      saveAppData(data);
+      localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
+    }
+
+    return data;
   } catch (error) {
     console.warn('Nie udało się odczytać danych aplikacji.', error);
-    return createSampleData();
+    const sampleData = createSampleData();
+    saveAppData(sampleData);
+    localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
+    return sampleData;
   }
 }
 
@@ -72,6 +88,7 @@ export function importAppData(value: unknown): AppData {
 export function clearStoredData() {
   if (typeof localStorage !== 'undefined') {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(RECIPE_SEED_VERSION_KEY);
   }
 }
 

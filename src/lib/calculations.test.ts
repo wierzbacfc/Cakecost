@@ -126,7 +126,16 @@ describe('calculations', () => {
     const data = createSampleData('2026-01-01T00:00:00.000Z');
 
     expect(data.ingredients.length).toBeGreaterThanOrEqual(30);
-    expect(data.recipes).toHaveLength(10);
+    expect(data.recipes).toHaveLength(7);
+    expect(data.recipes.map((sampleRecipe) => sampleRecipe.name)).toEqual([
+      'Sernik nowojorski (przepis II)',
+      'Sernik z mango',
+      'Domowa szarlotka z budyniem',
+      'Szarlotka z jabłek prażonych',
+      'Szarlotka spod samiuśkich Tater',
+      'Bezmączne ciasto czekoladowe',
+      'Ciasto czekoladowe'
+    ]);
 
     data.recipes.forEach((sampleRecipe) => {
       const cost = calculateRecipeIngredientsCost(sampleRecipe, data.ingredients);
