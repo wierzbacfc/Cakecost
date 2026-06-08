@@ -18,6 +18,7 @@ import type { AppData, AppSettings, Ingredient, QuoteHistoryItem, Recipe } from 
 export function App() {
   const [data, setData] = useState<AppData>(() => loadAppData());
   const [activePage, setActivePage] = useState<Page>('home');
+  const [editingHistoryItem, setEditingHistoryItem] = useState<QuoteHistoryItem | null>(null);
   const [toast, setToast] = useState('');
   const toastTimeout = useRef<number>();
 
@@ -29,6 +30,13 @@ export function App() {
     setToast(message);
     window.clearTimeout(toastTimeout.current);
     toastTimeout.current = window.setTimeout(() => setToast(''), 2600);
+  }
+
+  function navigate(page: Page) {
+    if (page !== 'quote') {
+      setEditingHistoryItem(null);
+    }
+    setActivePage(page);
   }
 
   function saveIngredient(ingredient: Ingredient) {
@@ -76,9 +84,11 @@ export function App() {
   function saveHistoryItem(item: QuoteHistoryItem) {
     setData((current) => ({
       ...current,
-      history: [item, ...current.history]
+      history: current.history.some((historyItem) => historyItem.id === item.id)
+        ? current.history.map((historyItem) => (historyItem.id === item.id ? item : historyItem))
+        : [item, ...current.history]
     }));
-    notify('Wycena zapisana.');
+    notify(editingHistoryItem ? 'Wycena zaktualizowana.' : 'Wycena zapisana.');
   }
 
   function deleteHistoryItem(itemId: string) {
@@ -97,6 +107,11 @@ export function App() {
       )
     }));
     notify('Nazwa wyceny zapisana.');
+  }
+
+  function editHistoryItem(item: QuoteHistoryItem) {
+    setEditingHistoryItem(item);
+    setActivePage('quote');
   }
 
   function updateSettings(settings: AppSettings) {
@@ -118,13 +133,13 @@ export function App() {
   }
 
   return (
-    <Layout activePage={activePage} onNavigate={setActivePage} toast={toast}>
+    <Layout activePage={activePage} onNavigate={navigate} toast={toast}>
       {activePage === 'home' ? (
         <HomePage
           ingredientCount={data.ingredients.length}
           recipeCount={data.recipes.length}
           historyCount={data.history.length}
-          onNavigate={setActivePage}
+          onNavigate={navigate}
         />
       ) : null}
 
@@ -152,7 +167,8 @@ export function App() {
           ingredients={data.ingredients}
           settings={data.settings}
           onSaveHistory={saveHistoryItem}
-          onOpenRecipes={() => setActivePage('recipes')}
+          editingHistoryItem={editingHistoryItem}
+          onOpenRecipes={() => navigate('recipes')}
         />
       ) : null}
 
@@ -161,6 +177,7 @@ export function App() {
           history={data.history}
           onDelete={deleteHistoryItem}
           onRename={renameHistoryItem}
+          onEdit={editHistoryItem}
         />
       ) : null}
 

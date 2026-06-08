@@ -22,6 +22,7 @@ type NewQuotePageProps = {
   settings: AppSettings;
   onSaveHistory: (item: QuoteHistoryItem) => void;
   onOpenRecipes: () => void;
+  editingHistoryItem?: QuoteHistoryItem | null;
 };
 
 export function NewQuotePage({
@@ -29,7 +30,8 @@ export function NewQuotePage({
   ingredients,
   settings,
   onSaveHistory,
-  onOpenRecipes
+  onOpenRecipes,
+  editingHistoryItem
 }: NewQuotePageProps) {
   const firstRecipeId = recipes[0]?.id ?? '';
   const [input, setInput] = useState<QuoteInput>(() => createInitialInput(firstRecipeId, settings));
@@ -42,6 +44,17 @@ export function NewQuotePage({
       setInput((current) => ({ ...current, recipeId: firstRecipeId }));
     }
   }, [firstRecipeId, input.recipeId, recipes]);
+
+  useEffect(() => {
+    if (!editingHistoryItem) {
+      return;
+    }
+
+    setInput({ ...editingHistoryItem.input });
+    setQuoteName(editingHistoryItem.quoteName);
+    setCustomerPrice(0);
+    setSavedMessage('');
+  }, [editingHistoryItem]);
 
   const selectedRecipe = recipes.find((recipe) => recipe.id === input.recipeId);
   const selectedRecipeActiveMinutes = selectedRecipe ? getActiveLaborMinutes(selectedRecipe) : 0;
@@ -78,15 +91,15 @@ export function NewQuotePage({
     }
 
     onSaveHistory({
-      id: createId('quote'),
+      id: editingHistoryItem?.id ?? createId('quote'),
       recipeId: selectedRecipe.id,
       recipeName: selectedRecipe.name,
       quoteName: quoteName.trim() || selectedRecipe.name,
-      date: new Date().toISOString(),
+      date: editingHistoryItem?.date ?? new Date().toISOString(),
       result: quoteState.result,
       input: { ...input }
     });
-    setSavedMessage('Wycena zapisana w historii.');
+    setSavedMessage(editingHistoryItem ? 'Zmiany w wycenie zapisane.' : 'Wycena zapisana w historii.');
   }
 
   if (recipes.length === 0) {
@@ -116,7 +129,7 @@ export function NewQuotePage({
       <section className="pageHeader">
         <div>
           <p className="eyebrow">Kalkulacja</p>
-          <h1>Nowa wycena</h1>
+          <h1>{editingHistoryItem ? 'Edycja wyceny' : 'Nowa wycena'}</h1>
         </div>
         <button
           className="button buttonPrimary"
@@ -125,7 +138,7 @@ export function NewQuotePage({
           onClick={saveQuote}
         >
           <Save size={20} />
-          Zapisz wycenę
+          {editingHistoryItem ? 'Zapisz zmiany' : 'Zapisz wycenę'}
         </button>
       </section>
 

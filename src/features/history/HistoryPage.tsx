@@ -1,4 +1,4 @@
-import { Check, Edit3, History, Trash2, X } from 'lucide-react';
+import { Calculator, Check, Edit3, History, Trash2, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { EmptyState } from '../../components/EmptyState';
@@ -10,9 +10,10 @@ type HistoryPageProps = {
   history: QuoteHistoryItem[];
   onDelete: (itemId: string) => void;
   onRename: (itemId: string, quoteName: string) => void;
+  onEdit: (item: QuoteHistoryItem) => void;
 };
 
-export function HistoryPage({ history, onDelete, onRename }: HistoryPageProps) {
+export function HistoryPage({ history, onDelete, onRename, onEdit }: HistoryPageProps) {
   const [deleteTarget, setDeleteTarget] = useState<QuoteHistoryItem | null>(null);
   const [editingId, setEditingId] = useState('');
   const [editingName, setEditingName] = useState('');
@@ -103,6 +104,14 @@ export function HistoryPage({ history, onDelete, onRename }: HistoryPageProps) {
                 </div>
               </div>
               <div className="itemActions">
+                <button
+                  className="iconButton"
+                  type="button"
+                  title="Edytuj wycenę"
+                  onClick={() => onEdit(item)}
+                >
+                  <Calculator size={18} />
+                </button>
                 <button
                   className="iconButton"
                   type="button"
