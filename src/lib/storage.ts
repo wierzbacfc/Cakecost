@@ -145,7 +145,7 @@ function normalizeIngredient(value: Partial<Ingredient>, fallbackDate: string): 
   const packagePrice = roundCurrency(nonNegativeNumber(value.packagePrice, 0));
   const packageAmount = nonNegativeNumber(value.packageAmount, 0);
 
-  if (packagePrice < 0 || packageAmount <= 0) {
+  if (packagePrice <= 0 || packageAmount <= 0) {
     return null;
   }
 
@@ -173,12 +173,7 @@ function normalizeRecipe(value: Partial<Recipe>, fallbackDate: string): Recipe |
         .map((ingredient) => ({
           ingredientId: ingredient.ingredientId,
           amount: nonNegativeNumber(ingredient.amount, 0),
-          amountMin: optionalPositiveNumber(ingredient.amountMin),
-          amountMax: optionalPositiveNumber(ingredient.amountMax),
-          unit: ingredient.unit,
-          section: ingredient.section ?? '',
-          notes: ingredient.notes ?? '',
-          pricingWarning: ingredient.pricingWarning ?? ''
+          unit: ingredient.unit
         }))
     : [];
 
@@ -187,8 +182,6 @@ function normalizeRecipe(value: Partial<Recipe>, fallbackDate: string): Recipe |
     name: value.name,
     category: value.category,
     description: value.description ?? '',
-    sourceName: value.sourceName ?? '',
-    sourceUrl: value.sourceUrl ?? '',
     formSize: value.formSize ?? '',
     servings: optionalPositiveNumber(value.servings),
     finalWeightGrams: optionalPositiveNumber(value.finalWeightGrams),

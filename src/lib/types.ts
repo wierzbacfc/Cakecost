@@ -1,21 +1,6 @@
-export const units = [
-  'g',
-  'kg',
-  'ml',
-  'l',
-  'szt',
-  'łyżeczka',
-  'łyżka',
-  'szklanka',
-  'opakowanie',
-  'słoik',
-  'szczypta',
-  'do posypania',
-  'do oprószenia',
-  'opcjonalnie'
-] as const;
+export const units = ['g', 'kg', 'ml', 'l', 'szt'] as const;
 export type Unit = (typeof units)[number];
-export type BaseUnit = Unit;
+export type BaseUnit = 'g' | 'ml' | 'szt';
 
 export const recipeCategories = ['ciasto', 'tort', 'babeczki', 'ciasteczka', 'inne'] as const;
 export type RecipeCategory = (typeof recipeCategories)[number];
@@ -35,12 +20,7 @@ export type Ingredient = {
 export type RecipeIngredient = {
   ingredientId: string;
   amount: number;
-  amountMin?: number;
-  amountMax?: number;
   unit: Unit;
-  section?: string;
-  notes?: string;
-  pricingWarning?: string;
 };
 
 export type Recipe = {
@@ -48,8 +28,6 @@ export type Recipe = {
   name: string;
   category: RecipeCategory;
   description?: string;
-  sourceName?: string;
-  sourceUrl?: string;
   formSize?: string;
   servings?: number;
   finalWeightGrams?: number;
