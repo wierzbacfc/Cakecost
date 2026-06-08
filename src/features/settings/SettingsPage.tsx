@@ -76,7 +76,7 @@ export function SettingsPage({
         </div>
       </section>
 
-      <section className="panel formGrid">
+      <section className="panel formGrid settingsPanel settingsDefaults">
         <div className="fourColumn">
           <NumberInput
             label="Stawka godzinowa"
@@ -150,7 +150,7 @@ export function SettingsPage({
         </label>
       </section>
 
-      <section className="panel formGrid">
+      <section className="panel formGrid settingsPanel settingsData">
         <div className="formHeader">
           <div>
             <p className="eyebrow">Plik JSON</p>

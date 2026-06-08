@@ -13,6 +13,13 @@
   --secondary: #0f766e;
   --secondary-dark: #115e59;
   --amber: #b45309;
+  --amber-bg: #fff7e6;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --violet: #7c3aed;
+  --violet-bg: #f5f3ff;
+  --rose-bg: #fff1f5;
+  --teal-bg: #eafaf6;
   --danger: #b42318;
   --danger-bg: #fff1f0;
   --good: #14735f;
@@ -573,6 +580,73 @@ h3 {
   color: var(--secondary-dark);
 }
 
+.settingsPanel {
+  gap: 0;
+  overflow: hidden;
+}
+
+.settingsPanel > .fourColumn,
+.settingsPanel > .threeColumn,
+.settingsPanel > .field,
+.settingsPanel > .formHeader,
+.settingsPanel > .buttonRow,
+.settingsPanel > .warning {
+  margin-top: 0.9rem;
+}
+
+.settingsPanel > :first-child {
+  margin-top: 0;
+}
+
+.settingsPanel > .fourColumn,
+.settingsPanel > .threeColumn,
+.settingsPanel > .field,
+.settingsPanel > .buttonRow {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.95rem;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.settingsDefaults {
+  border-color: rgba(124, 58, 237, 0.16);
+  background:
+    linear-gradient(135deg, rgba(245, 243, 255, 0.95), rgba(239, 246, 255, 0.75) 45%, rgba(255, 255, 255, 0)),
+    #fff;
+}
+
+.settingsDefaults > .fourColumn {
+  border-color: rgba(37, 99, 235, 0.16);
+  background: var(--blue-bg);
+}
+
+.settingsDefaults > .threeColumn {
+  border-color: rgba(184, 50, 86, 0.16);
+  background: var(--rose-bg);
+}
+
+.settingsDefaults > .field {
+  border-color: rgba(180, 83, 9, 0.18);
+  background: var(--amber-bg);
+}
+
+.settingsData {
+  border-color: rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(135deg, rgba(234, 250, 246, 0.95), rgba(255, 247, 230, 0.75) 55%, rgba(255, 255, 255, 0)),
+    #fff;
+}
+
+.settingsData > .formHeader {
+  border-bottom: 1px solid rgba(15, 118, 110, 0.16);
+  padding-bottom: 0.75rem;
+}
+
+.settingsData > .buttonRow {
+  border-color: rgba(15, 118, 110, 0.16);
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .itemActions {
   display: flex;
   flex: 0 0 auto;
@@ -609,6 +683,52 @@ h3 {
   align-items: start;
 }
 
+.quoteForm {
+  gap: 0;
+  border-color: rgba(37, 99, 235, 0.18);
+  background:
+    linear-gradient(180deg, rgba(239, 246, 255, 0.78), rgba(255, 255, 255, 0) 12rem),
+    var(--surface);
+}
+
+.quoteForm > .field,
+.quoteForm > .threeColumn,
+.quoteForm > .segmentedControl,
+.quoteForm > .calculatedLine,
+.quoteForm > .inputShell,
+.quoteForm > .warning {
+  margin-top: 0.85rem;
+}
+
+.quoteForm > .field,
+.quoteForm > .threeColumn,
+.quoteForm > .segmentedControl {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.9rem;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.quoteForm > .field:nth-of-type(1) {
+  border-color: rgba(184, 50, 86, 0.18);
+  background: var(--rose-bg);
+}
+
+.quoteForm > .field:nth-of-type(2) {
+  border-color: rgba(37, 99, 235, 0.18);
+  background: var(--blue-bg);
+}
+
+.quoteForm > .threeColumn {
+  border-color: rgba(124, 58, 237, 0.16);
+  background: var(--violet-bg);
+}
+
+.quoteForm > .calculatedLine {
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  background: var(--teal-bg);
+}
+
 .segmentedControl {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -639,7 +759,9 @@ h3 {
   border: 1px solid rgba(15, 118, 110, 0.2);
   border-radius: 8px;
   padding: 0.85rem;
-  background: rgba(15, 118, 110, 0.06);
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(37, 99, 235, 0.08)),
+    #fff;
 }
 
 .recipeTimeHeader {
@@ -694,6 +816,9 @@ h3 {
   display: grid;
   gap: 1rem;
   border-color: rgba(184, 50, 86, 0.25);
+  background:
+    linear-gradient(135deg, rgba(184, 50, 86, 0.1), rgba(15, 118, 110, 0.08) 42%, rgba(180, 83, 9, 0.08)),
+    #fff;
 }
 
 .resultPrice {
@@ -706,18 +831,22 @@ h3 {
 .resultBreakdown {
   display: grid;
   gap: 0.3rem;
+  border: 1px solid rgba(223, 229, 226, 0.8);
+  border-radius: 8px;
+  padding: 0.55rem;
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .costRow {
-  padding: 0.62rem 0;
-  border-bottom: 1px solid var(--line);
+  padding: 0.62rem 0.7rem;
+  border-bottom: 1px solid rgba(223, 229, 226, 0.9);
 }
 
 .costRow.emphasized {
   border-bottom: 0;
   padding: 0.72rem 0.78rem;
   color: var(--secondary-dark);
-  background: rgba(15, 118, 110, 0.08);
+  background: var(--teal-bg);
 }
 
 .formulaBox,
@@ -729,7 +858,8 @@ h3 {
 
 .formulaBox {
   color: var(--muted);
-  background: #f1f5f4;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  background: var(--blue-bg);
 }
 
 .metricGrid {
@@ -737,7 +867,9 @@ h3 {
 }
 
 .metricTile {
+  border-color: rgba(124, 58, 237, 0.16);
   padding: 0.82rem;
+  background: var(--violet-bg);
 }
 
 .metricTile strong {

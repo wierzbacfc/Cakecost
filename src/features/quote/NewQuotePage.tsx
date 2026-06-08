@@ -130,7 +130,7 @@ export function NewQuotePage({
       </section>
 
       <div className="quoteLayout">
-        <form className="panel formGrid">
+        <form className="panel formGrid quoteForm">
           <label className="field">
             <span className="fieldLabel">Nazwa wyceny</span>
             <input
