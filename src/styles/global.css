@@ -837,9 +837,11 @@ h3 {
 }
 
 .recipeFormDialog {
-  width: min(1040px, 100%);
+  width: min(1080px, 100%);
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
+  padding: 0;
+  background: #f7faf8;
 }
 
 .recipeFormDialog .panel {
@@ -847,6 +849,71 @@ h3 {
   padding: 0;
   background: transparent;
   box-shadow: none;
+}
+
+.recipeFormDialog .formGrid {
+  gap: 0;
+}
+
+.recipeFormDialog .formHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 1.2rem;
+  background: #fff;
+}
+
+.recipeFormDialog .formHeader h2 {
+  max-width: 68ch;
+  overflow-wrap: anywhere;
+}
+
+.recipeFormDialog .formGrid > .field,
+.recipeFormDialog .formGrid > .twoColumn,
+.recipeFormDialog .formGrid > .threeColumn,
+.recipeFormDialog .formGrid > .fourColumn,
+.recipeFormDialog .formGrid > .subSection {
+  margin: 1rem 1.2rem 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(39, 49, 58, 0.06);
+}
+
+.recipeFormDialog .formGrid > .subSection {
+  border-top: 1px solid var(--line);
+}
+
+.recipeFormDialog textarea {
+  min-height: 7.5rem;
+}
+
+.recipeFormDialog .recipeIngredientList {
+  gap: 0.65rem;
+}
+
+.recipeFormDialog .recipeIngredientRow {
+  border-color: rgba(15, 118, 110, 0.18);
+  background: #fff;
+  box-shadow: inset 3px 0 0 rgba(15, 118, 110, 0.28);
+}
+
+.recipeFormDialog .calculatedLine {
+  border: 1px solid rgba(15, 118, 110, 0.14);
+}
+
+.recipeFormDialog .formActions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding: 0.9rem 1.2rem;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
 }
 
 .dialogIcon {
@@ -1177,6 +1244,33 @@ h3 {
 
   .formGrid {
     gap: 0.78rem;
+  }
+
+  .recipeFormBackdrop {
+    padding: 0.5rem;
+  }
+
+  .recipeFormDialog {
+    max-height: calc(100vh - 1rem);
+  }
+
+  .recipeFormDialog .formHeader {
+    align-items: flex-start;
+    flex-direction: row;
+    padding: 0.85rem;
+  }
+
+  .recipeFormDialog .formGrid > .field,
+  .recipeFormDialog .formGrid > .twoColumn,
+  .recipeFormDialog .formGrid > .threeColumn,
+  .recipeFormDialog .formGrid > .fourColumn,
+  .recipeFormDialog .formGrid > .subSection {
+    margin: 0.75rem 0.75rem 0;
+    padding: 0.85rem;
+  }
+
+  .recipeFormDialog .formActions {
+    padding: 0.75rem;
   }
 
   .subSectionHeader {
