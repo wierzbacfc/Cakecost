@@ -383,5 +383,5 @@ function getRecipeUnitForIngredient(ingredient: Ingredient): Unit {
     return 'ml';
   }
 
-  return 'szt';
+  return ingredient.unit;
 }

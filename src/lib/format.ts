@@ -30,7 +30,7 @@ export function formatDecimal(value: number, maxDigits = 5) {
 
 export function formatUnitPrice(unitPrice: number, unit: Unit) {
   const baseUnit =
-    unit === 'kg' || unit === 'g' ? 'g' : unit === 'l' || unit === 'ml' ? 'ml' : 'szt.';
+    unit === 'kg' || unit === 'g' ? 'g' : unit === 'l' || unit === 'ml' ? 'ml' : unit;
 
   if (unitPrice > 0 && unitPrice < 1) {
     return `< 1 zł/${baseUnit}`;

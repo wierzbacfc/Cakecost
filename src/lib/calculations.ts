@@ -40,7 +40,16 @@ const unitBaseMap: Record<Unit, BaseUnit> = {
   kg: 'g',
   ml: 'ml',
   l: 'ml',
-  szt: 'szt'
+  szt: 'szt',
+  'łyżeczka': 'łyżeczka',
+  'łyżka': 'łyżka',
+  szklanka: 'szklanka',
+  opakowanie: 'opakowanie',
+  słoik: 'słoik',
+  szczypta: 'szczypta',
+  'do posypania': 'do posypania',
+  'do oprószenia': 'do oprószenia',
+  opcjonalnie: 'opcjonalnie'
 };
 
 export function getBaseUnit(unit: Unit): BaseUnit {
@@ -68,8 +77,8 @@ export function calculateIngredientUnitPrice(
   packageAmount: number,
   unit: Unit
 ): number {
-  if (!Number.isFinite(packagePrice) || packagePrice <= 0) {
-    throw new Error('Cena opakowania musi być większa od 0.');
+  if (!Number.isFinite(packagePrice) || packagePrice < 0) {
+    throw new Error('Cena opakowania nie może być ujemna.');
   }
 
   if (!Number.isFinite(packageAmount) || packageAmount <= 0) {
@@ -125,7 +134,10 @@ export function calculateRecipeIngredientsCost(
       unit: recipeIngredient.unit,
       baseAmount: recipeAmount.amount,
       baseUnit: recipeAmount.unit,
-      cost: roundCurrency(recipeAmount.amount * ingredient.unitPrice)
+      cost:
+        ingredient.packagePrice <= 0
+          ? 0
+          : roundCurrency(recipeAmount.amount * ingredient.unitPrice)
     });
   });
 
