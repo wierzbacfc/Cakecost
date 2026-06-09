@@ -4,8 +4,12 @@ export function registerServiceWorker() {
   }
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      console.warn('Nie udało się zarejestrować service workera.', error);
-    });
+    const serviceWorkerUrl = new URL(`${import.meta.env.BASE_URL}sw.js`, window.location.href);
+
+    navigator.serviceWorker
+      .register(serviceWorkerUrl.toString(), { scope: import.meta.env.BASE_URL })
+      .catch((error) => {
+        console.warn('Nie udalo sie zarejestrowac service workera.', error);
+      });
   });
 }
