@@ -190,113 +190,128 @@ export function NewQuotePage({
             </div>
           ) : null}
 
-          <div className="threeColumn">
-            <NumberInput
-              label="Opakowanie"
-              value={input.packagingCost}
-              suffix="zł"
-              onValueChange={(value) => updateInput('packagingCost', value)}
-            />
-            <NumberInput
-              label="Dodatki"
-              value={input.extrasCost}
-              suffix="zł"
-              onValueChange={(value) => updateInput('extrasCost', value)}
-            />
-          </div>
-
-          <div className="calculatedLine">
-            <span>Energia wyliczona automatycznie</span>
-            <strong>
-              <Money value={quoteState.result?.energyCost ?? 0} />
-            </strong>
-          </div>
-
-          <label className="field">
-            <span className="fieldLabel">Dowóz</span>
-            <div className="segmentedControl" aria-label="Dowóz">
-              <button
-                className={!input.includeDelivery ? 'active' : ''}
-                type="button"
-                onClick={() => updateInput('includeDelivery', false)}
-              >
-                Bez dowozu
-              </button>
-              <button
-                className={input.includeDelivery ? 'active' : ''}
-                type="button"
-                onClick={() => updateInput('includeDelivery', true)}
-              >
-                Z dowozem (+{input.deliveryCost} zł)
-              </button>
+          <section className="quoteSection quoteSectionCost" aria-label="Parametry kosztowe">
+            <div className="quoteSectionHeader">
+              <span>Parametry kosztowe</span>
+              <small>Wydatki potrzebne do wykonania wypieku</small>
             </div>
-          </label>
 
-          <div className="threeColumn">
+            <div className="twoColumn">
+              <NumberInput
+                label="Opakowanie"
+                value={input.packagingCost}
+                suffix="zł"
+                onValueChange={(value) => updateInput('packagingCost', value)}
+              />
+              <NumberInput
+                label="Dodatki"
+                value={input.extrasCost}
+                suffix="zł"
+                onValueChange={(value) => updateInput('extrasCost', value)}
+              />
+            </div>
+
+            <div className="calculatedLine">
+              <span>Energia wyliczona automatycznie</span>
+              <strong>
+                <Money value={quoteState.result?.energyCost ?? 0} />
+              </strong>
+            </div>
+
+            <label className="field">
+              <span className="fieldLabel">Dowóz</span>
+              <div className="segmentedControl" aria-label="Dowóz">
+                <button
+                  className={!input.includeDelivery ? 'active' : ''}
+                  type="button"
+                  onClick={() => updateInput('includeDelivery', false)}
+                >
+                  Bez dowozu
+                </button>
+                <button
+                  className={input.includeDelivery ? 'active' : ''}
+                  type="button"
+                  onClick={() => updateInput('includeDelivery', true)}
+                >
+                  Z dowozem (+{input.deliveryCost} zł)
+                </button>
+              </div>
+            </label>
+
+            <div className="twoColumn">
+              <NumberInput
+                label="Dodatkowe koszty (%)"
+                value={input.safetyMarginPercent}
+                suffix="%"
+                onValueChange={(value) => updateInput('safetyMarginPercent', value)}
+              />
+              <label className="field">
+                <span className="fieldLabel">Zaokrąglanie</span>
+                <select
+                  value={input.roundTo}
+                  onChange={(event) => updateInput('roundTo', Number(event.target.value) as RoundTo)}
+                >
+                  <option value={1}>do 1 zł</option>
+                  <option value={5}>do 5 zł</option>
+                  <option value={10}>do 10 zł</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section className="quoteSection quoteSectionEarning" aria-label="Parametry zarobkowe">
+            <div className="quoteSectionHeader">
+              <span>Parametry zarobkowe</span>
+              <small>Stawka pracy i zysk doliczany do ceny</small>
+            </div>
+
             <NumberInput
               label="Stawka godzinowa"
               value={input.hourlyRate}
               suffix="zł/h"
               onValueChange={(value) => updateInput('hourlyRate', value)}
             />
-            <NumberInput
-              label="Dodatkowe koszty (%)"
-              value={input.safetyMarginPercent}
-              suffix="%"
-              onValueChange={(value) => updateInput('safetyMarginPercent', value)}
-            />
-            <label className="field">
-              <span className="fieldLabel">Zaokrąglanie</span>
-              <select
-                value={input.roundTo}
-                onChange={(event) => updateInput('roundTo', Number(event.target.value) as RoundTo)}
+
+            <div className="segmentedControl" aria-label="Tryb zysku">
+              <button
+                className={input.profitMode === 'fixed' ? 'active' : ''}
+                type="button"
+                onClick={() => updateInput('profitMode', 'fixed' as ProfitMode)}
               >
-                <option value={1}>do 1 zł</option>
-                <option value={5}>do 5 zł</option>
-                <option value={10}>do 10 zł</option>
-              </select>
-            </label>
-          </div>
+                Kwotowo
+              </button>
+              <button
+                className={input.profitMode === 'percent' ? 'active' : ''}
+                type="button"
+                onClick={() => updateInput('profitMode', 'percent' as ProfitMode)}
+              >
+                Procentowo
+              </button>
+            </div>
 
-          <div className="segmentedControl" aria-label="Tryb zysku">
-            <button
-              className={input.profitMode === 'fixed' ? 'active' : ''}
-              type="button"
-              onClick={() => updateInput('profitMode', 'fixed' as ProfitMode)}
-            >
-              Kwotowo
-            </button>
-            <button
-              className={input.profitMode === 'percent' ? 'active' : ''}
-              type="button"
-              onClick={() => updateInput('profitMode', 'percent' as ProfitMode)}
-            >
-              Procentowo
-            </button>
-          </div>
+            {input.profitMode === 'fixed' ? (
+              <NumberInput
+                label="Zysk kwotowy"
+                value={input.profitFixed ?? 0}
+                suffix="zł"
+                onValueChange={(value) => updateInput('profitFixed', value)}
+              />
+            ) : (
+              <NumberInput
+                label="Zysk procentowy"
+                value={input.profitPercent ?? 0}
+                suffix="%"
+                onValueChange={(value) => updateInput('profitPercent', value)}
+              />
+            )}
 
-          {input.profitMode === 'fixed' ? (
             <NumberInput
-              label="Zysk kwotowy"
-              value={input.profitFixed ?? 0}
+              label="Cena klienta / własna cena sprzedaży"
+              value={customerPrice}
               suffix="zł"
-              onValueChange={(value) => updateInput('profitFixed', value)}
+              onValueChange={setCustomerPrice}
             />
-          ) : (
-            <NumberInput
-              label="Zysk procentowy"
-              value={input.profitPercent ?? 0}
-              suffix="%"
-              onValueChange={(value) => updateInput('profitPercent', value)}
-            />
-          )}
-
-          <NumberInput
-            label="Cena klienta / własna cena sprzedaży"
-            value={customerPrice}
-            suffix="zł"
-            onValueChange={setCustomerPrice}
-          />
+          </section>
 
           {quoteState.error ? <div className="warning warningDanger">{quoteState.error}</div> : null}
           {savedMessage ? <div className="warning warningGood">{savedMessage}</div> : null}

@@ -92,13 +92,13 @@ export function HistoryPage({ history, onDelete, onRename, onEdit }: HistoryPage
                   {item.recipeName} · {formatDate(item.date)}
                 </p>
                 <div className="miniMetrics">
-                  <span>
+                  <span className="miniMetricCost">
                     Koszt: <Money value={item.result.totalCost} />
                   </span>
-                  <span>
+                  <span className="miniMetricPrice">
                     Cena: <Money value={item.result.suggestedPrice} rounded />
                   </span>
-                  <span>
+                  <span className="miniMetricEarning">
                     Zysk: <Money value={item.result.profitValue} />
                   </span>
                 </div>

@@ -1,7 +1,7 @@
 import { calculateIngredientUnitPrice } from './calculations';
 import type { AppData, AppSettings, Ingredient, Recipe, Unit } from './types';
 
-export const recipeSeedVersion = 'moje-wypieki-links-2026-06-08';
+export const recipeSeedVersion = 'moje-wypieki-links-2026-06-09';
 
 export const defaultSettings: AppSettings = {
   defaultHourlyRate: 40,
@@ -64,7 +64,14 @@ const ingredientIds = {
   espresso: 'sample-espresso',
   baileys: 'sample-baileys',
   cream36: 'sample-cream-36',
-  dessertChocolate: 'sample-dessert-chocolate'
+  dessertChocolate: 'sample-dessert-chocolate',
+  eggWhites: 'sample-egg-whites',
+  ricotta: 'sample-ricotta',
+  chocolateCookies: 'sample-chocolate-cookies',
+  pineapple: 'sample-pineapple',
+  cloves: 'sample-cloves',
+  nutmeg: 'sample-nutmeg',
+  allspice: 'sample-allspice'
 };
 
 export function createSampleData(now = new Date().toISOString()): AppData {
@@ -95,6 +102,10 @@ export function mergeSampleCatalog(
   const catalog = createSampleCatalog(now);
   const existingIngredientIds = new Set(data.ingredients.map((ingredient) => ingredient.id));
   const existingRecipeIds = new Set(data.recipes.map((recipe) => recipe.id));
+  const catalogRecipes = options.replaceRecipes
+    ? data.recipes.filter((recipe) => !recipe.id.startsWith('mojewypieki-'))
+    : data.recipes;
+  const catalogRecipeIds = new Set(catalogRecipes.map((recipe) => recipe.id));
 
   return {
     ...data,
@@ -102,12 +113,12 @@ export function mergeSampleCatalog(
       ...data.ingredients,
       ...catalog.ingredients.filter((ingredient) => !existingIngredientIds.has(ingredient.id))
     ],
-    recipes: options.replaceRecipes
-      ? catalog.recipes
-      : [
-          ...data.recipes,
-          ...catalog.recipes.filter((recipe) => !existingRecipeIds.has(recipe.id))
-        ]
+    recipes: [
+      ...catalogRecipes,
+      ...catalog.recipes.filter((recipe) =>
+        options.replaceRecipes ? !catalogRecipeIds.has(recipe.id) : !existingRecipeIds.has(recipe.id)
+      )
+    ]
   };
 }
 
@@ -168,7 +179,14 @@ function createSampleIngredients(now: string): Ingredient[] {
     createIngredient(ingredientIds.espresso, 'Espresso', 2, 60, 'ml', now),
     createIngredient(ingredientIds.baileys, 'Likier Baileys', 60, 700, 'ml', now),
     createIngredient(ingredientIds.cream36, 'Śmietanka kremówka 36%', 9, 500, 'ml', now),
-    createIngredient(ingredientIds.dessertChocolate, 'Czekolada deserowa', 6, 100, 'g', now)
+    createIngredient(ingredientIds.dessertChocolate, 'Czekolada deserowa', 6, 100, 'g', now),
+    createIngredient(ingredientIds.eggWhites, 'Białka jaj', 12, 10, 'szt', now),
+    createIngredient(ingredientIds.ricotta, 'Serek ricotta', 9, 250, 'g', now),
+    createIngredient(ingredientIds.chocolateCookies, 'Markizy czekoladowe', 7, 16, 'szt', now),
+    createIngredient(ingredientIds.pineapple, 'Ananas odsączony', 8, 340, 'g', now),
+    createIngredient(ingredientIds.cloves, 'Goździki mielone', 4, 15, 'g', now),
+    createIngredient(ingredientIds.nutmeg, 'Gałka muszkatołowa', 5, 15, 'g', now),
+    createIngredient(ingredientIds.allspice, 'Ziele angielskie mielone', 4, 15, 'g', now)
   ];
 }
 
@@ -415,6 +433,108 @@ function createMojeWypiekiRecipes(now: string): Recipe[] {
         'Ciasto: 120 g masła; 1,5 szklanki drobnego cukru do wypieków; 2 duże jajka; 1 łyżeczka ekstraktu z wanilii; 110 g gorzkiej czekolady; 260 g mąki pszennej; 35 g kakao; 2 łyżeczki proszku do pieczenia; 1,5 szklanki mleka.',
         'Polewa: 120 ml śmietany kremówki 30% lub 36%; 140 g czekolady deserowej.',
         'Czasy ze źródła: pieczenie ok. 40 min lub dłużej w 165°C; stężenie polewy bez podanej długości.'
+      ]
+    ),
+    createRecipe(
+      now,
+      'mojewypieki-kruche-ciasto-z-malinami-i-lekka-budyniowa-pianka',
+      'Kruche ciasto z malinami i lekką budyniową pianką',
+      'blacha 33 x 20 cm',
+      16,
+      2200,
+      50,
+      55,
+      5,
+      20,
+      [
+        { ingredientId: ingredientIds.flour, amount: 400, unit: 'g' },
+        { ingredientId: ingredientIds.butter, amount: 250, unit: 'g' },
+        { ingredientId: ingredientIds.bakingPowder, amount: 10, unit: 'g' },
+        { ingredientId: ingredientIds.powderedSugar, amount: 48, unit: 'g' },
+        { ingredientId: ingredientIds.yolks, amount: 5, unit: 'szt' },
+        { ingredientId: ingredientIds.eggWhites, amount: 5, unit: 'szt' },
+        { ingredientId: ingredientIds.sugar, amount: 220, unit: 'g' },
+        { ingredientId: ingredientIds.vanillaSugar, amount: 16, unit: 'g' },
+        { ingredientId: ingredientIds.pudding, amount: 80, unit: 'g' },
+        { ingredientId: ingredientIds.oil, amount: 125, unit: 'ml' },
+        { ingredientId: ingredientIds.raspberries, amount: 500, unit: 'g' }
+      ],
+      [
+        'Źródło: Moje Wypieki, https://mojewypieki.com/przepis/kruche-ciasto-z-malinami-i-lekka-budyniowa-pianka',
+        'Oryginalne składniki:',
+        'Kruche ciasto: 2,5 szklanki mąki pszennej; 250 g zimnego masła; 2 łyżeczki proszku do pieczenia; 3 łyżki cukru pudru; 5 żółtek.',
+        'Pianka budyniowa: 5 białek; 1 szklanka drobnego cukru; 16 g cukru wanilinowego; 2 budynie waniliowe lub śmietankowe bez cukru, 2 x 40 g; pół szklanki oleju.',
+        'Ponadto: 500 g malin; cukier puder do oprószenia.',
+        'Czasy ze źródła: mrożenie ciasta bez dokładnej długości, podpieczenie spodu ok. 20 min w 190°C, pieczenie całości ok. 30-40 min w 190°C.'
+      ]
+    ),
+    createRecipe(
+      now,
+      'mojewypieki-mini-serniczki-z-truskawkami',
+      'Mini serniczki z truskawkami',
+      'forma do muffinów, 10 szt.',
+      10,
+      1100,
+      45,
+      30,
+      15,
+      15,
+      [
+        { ingredientId: ingredientIds.chocolateCookies, amount: 10, unit: 'szt' },
+        { ingredientId: ingredientIds.curd, amount: 250, unit: 'g' },
+        { ingredientId: ingredientIds.ricotta, amount: 250, unit: 'g' },
+        { ingredientId: ingredientIds.eggs, amount: 1, unit: 'szt' },
+        { ingredientId: ingredientIds.pudding, amount: 20, unit: 'g' },
+        { ingredientId: ingredientIds.sugar, amount: 146, unit: 'g' },
+        { ingredientId: ingredientIds.strawberries, amount: 600, unit: 'g' },
+        { ingredientId: ingredientIds.lemonJuice, amount: 15, unit: 'ml' },
+        { ingredientId: ingredientIds.gelatin, amount: 7, unit: 'g' }
+      ],
+      [
+        'Źródło: Moje Wypieki, https://mojewypieki.com/przepis/mini-serniczki-z-truskawkami',
+        'Oryginalne składniki:',
+        'Serniczki: 10 markiz czekoladowych; 250 g twarogu tłustego lub półtłustego; 250 g ricotty; 1 duże jajko; 20 g budyniu waniliowego bez cukru; 110 g drobnego cukru.',
+        'Sos truskawkowy: 450 g truskawek; 1 łyżka soku z cytryny; 3 łyżki cukru; 7 g żelatyny + 30 ml zimnej wody. Ponadto: 10 truskawek.',
+        'Czasy ze źródła: pieczenie ok. 28-30 min w 160°C, studzenie na kratce, chłodzenie do zastygnięcia sosu.'
+      ]
+    ),
+    createRecipe(
+      now,
+      'mojewypieki-ciasto-marchewkowe-najlepsze',
+      'Ciasto marchewkowe, najlepsze',
+      'tortownica 20 cm',
+      10,
+      1200,
+      45,
+      45,
+      20,
+      15,
+      [
+        { ingredientId: ingredientIds.flour, amount: 107, unit: 'g' },
+        { ingredientId: ingredientIds.sugar, amount: 110, unit: 'g' },
+        { ingredientId: ingredientIds.bakingSoda, amount: 5, unit: 'g' },
+        { ingredientId: ingredientIds.bakingPowder, amount: 4, unit: 'g' },
+        { ingredientId: ingredientIds.cinnamon, amount: 3, unit: 'g' },
+        { ingredientId: ingredientIds.cloves, amount: 1, unit: 'g' },
+        { ingredientId: ingredientIds.nutmeg, amount: 1, unit: 'g' },
+        { ingredientId: ingredientIds.allspice, amount: 1, unit: 'g' },
+        { ingredientId: ingredientIds.salt, amount: 1, unit: 'g' },
+        { ingredientId: ingredientIds.oil, amount: 83, unit: 'ml' },
+        { ingredientId: ingredientIds.eggs, amount: 2, unit: 'szt' },
+        { ingredientId: ingredientIds.walnuts, amount: 100, unit: 'g' },
+        { ingredientId: ingredientIds.pineapple, amount: 85, unit: 'g' },
+        { ingredientId: ingredientIds.carrots, amount: 110, unit: 'g' },
+        { ingredientId: ingredientIds.creamCheese, amount: 300, unit: 'g' },
+        { ingredientId: ingredientIds.butter, amount: 90, unit: 'g' },
+        { ingredientId: ingredientIds.powderedSugar, amount: 160, unit: 'g' },
+        { ingredientId: ingredientIds.vanillaExtract, amount: 5, unit: 'ml' }
+      ],
+      [
+        'Źródło: Moje Wypieki, https://mojewypieki.com/przepis/ciasto-marchewkowe-najlepsze',
+        'Oryginalne składniki:',
+        'Ciasto: 2/3 szklanki mąki pszennej; pół szklanki drobnego cukru; 1 łyżeczka sody; 3/4 łyżeczki proszku do pieczenia; cynamon, goździki, gałka muszkatołowa, ziele angielskie i sól; 1/3 szklanki oleju; 2 jajka; 1 szklanka orzechów włoskich; pół szklanki ananasa; 1 szklanka startej marchewki.',
+        'Krem: 300 g serka philadelphia; 90 g masła; 1 szklanka cukru pudru; 1 łyżeczka ekstraktu lub pasty z wanilii.',
+        'Czasy ze źródła: pieczenie ok. 40-45 min w 175°C, potem studzenie i przełożenie kremem.'
       ]
     )
   ];

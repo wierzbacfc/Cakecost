@@ -127,7 +127,7 @@ describe('calculations', () => {
     const data = createSampleData('2026-01-01T00:00:00.000Z');
 
     expect(data.ingredients.length).toBeGreaterThanOrEqual(30);
-    expect(data.recipes).toHaveLength(7);
+    expect(data.recipes).toHaveLength(10);
     expect(data.recipes.map((sampleRecipe) => sampleRecipe.name)).toEqual([
       'Sernik nowojorski (przepis II)',
       'Sernik z mango',
@@ -135,7 +135,10 @@ describe('calculations', () => {
       'Szarlotka z jabłek prażonych',
       'Szarlotka spod samiuśkich Tater',
       'Bezmączne ciasto czekoladowe',
-      'Ciasto czekoladowe'
+      'Ciasto czekoladowe',
+      'Kruche ciasto z malinami i lekką budyniową pianką',
+      'Mini serniczki z truskawkami',
+      'Ciasto marchewkowe, najlepsze'
     ]);
 
     data.recipes.forEach((sampleRecipe) => {

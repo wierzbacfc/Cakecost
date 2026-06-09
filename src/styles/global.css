@@ -22,6 +22,14 @@
   --teal-bg: #eafaf6;
   --danger: #b42318;
   --danger-bg: #fff1f0;
+  --cost: #c2410c;
+  --cost-dark: #9a3412;
+  --cost-bg: #fff4ed;
+  --cost-soft: #ffe7dc;
+  --earning: #15803d;
+  --earning-dark: #166534;
+  --earning-bg: #ecfdf3;
+  --earning-soft: #d9fbe6;
   --good: #14735f;
   --good-bg: #eefcf7;
   --warning-bg: #fff8db;
@@ -157,10 +165,19 @@ p {
   width: 44px;
   height: 44px;
   place-items: center;
-  border-radius: 8px;
-  color: var(--accent);
-  background: var(--surface-strong);
-  box-shadow: inset 0 0 0 1px rgba(184, 50, 86, 0.16);
+  overflow: hidden;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(184, 50, 86, 0.14),
+    0 8px 18px rgba(184, 50, 86, 0.12);
+}
+
+.brandIcon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .topNav {
@@ -466,8 +483,8 @@ h3 {
 
 .calculatedLine {
   padding: 0.8rem;
-  color: var(--secondary-dark);
-  background: rgba(15, 118, 110, 0.08);
+  color: var(--cost-dark);
+  background: var(--cost-bg);
 }
 
 .subSection {
@@ -577,7 +594,7 @@ h3 {
 }
 
 .recipeCardCost strong {
-  color: var(--secondary-dark);
+  color: var(--cost-dark);
 }
 
 .settingsPanel {
@@ -668,6 +685,21 @@ h3 {
   font-weight: 700;
 }
 
+.miniMetrics .miniMetricCost {
+  color: var(--cost-dark);
+  background: var(--cost-bg);
+}
+
+.miniMetrics .miniMetricPrice {
+  color: var(--amber);
+  background: var(--amber-bg);
+}
+
+.miniMetrics .miniMetricEarning {
+  color: var(--earning-dark);
+  background: var(--earning-bg);
+}
+
 .historyNameEditor {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -685,14 +717,14 @@ h3 {
 
 .quoteForm {
   gap: 0;
-  border-color: rgba(37, 99, 235, 0.18);
+  border-color: rgba(184, 50, 86, 0.18);
   background:
-    linear-gradient(180deg, rgba(239, 246, 255, 0.78), rgba(255, 255, 255, 0) 12rem),
+    linear-gradient(180deg, rgba(255, 241, 240, 0.78), rgba(236, 253, 243, 0.44) 16rem, rgba(255, 255, 255, 0) 26rem),
     var(--surface);
 }
 
 .quoteForm > .field,
-.quoteForm > .threeColumn,
+.quoteForm > .quoteSection,
 .quoteForm > .segmentedControl,
 .quoteForm > .calculatedLine,
 .quoteForm > .inputShell,
@@ -701,7 +733,7 @@ h3 {
 }
 
 .quoteForm > .field,
-.quoteForm > .threeColumn,
+.quoteForm > .quoteSection,
 .quoteForm > .segmentedControl {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -719,14 +751,75 @@ h3 {
   background: var(--blue-bg);
 }
 
-.quoteForm > .threeColumn {
-  border-color: rgba(124, 58, 237, 0.16);
-  background: var(--violet-bg);
+.quoteSection {
+  display: grid;
+  gap: 0.85rem;
 }
 
-.quoteForm > .calculatedLine {
-  border: 1px solid rgba(15, 118, 110, 0.18);
-  background: var(--teal-bg);
+.quoteSectionHeader {
+  display: grid;
+  gap: 0.15rem;
+  border-bottom: 1px solid rgba(223, 229, 226, 0.85);
+  padding-bottom: 0.72rem;
+}
+
+.quoteSectionHeader span {
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.quoteSectionHeader small {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.quoteSectionCost {
+  border-color: rgba(194, 65, 12, 0.22);
+  background:
+    linear-gradient(135deg, rgba(255, 244, 237, 0.96), rgba(255, 231, 220, 0.72)),
+    #fff;
+}
+
+.quoteSectionCost .quoteSectionHeader span,
+.quoteSectionCost .fieldLabel {
+  color: var(--cost-dark);
+}
+
+.quoteSectionEarning {
+  border-color: rgba(21, 128, 61, 0.22);
+  background:
+    linear-gradient(135deg, rgba(236, 253, 243, 0.98), rgba(217, 251, 230, 0.74)),
+    #fff;
+}
+
+.quoteSectionEarning .quoteSectionHeader span,
+.quoteSectionEarning .fieldLabel {
+  color: var(--earning-dark);
+}
+
+.quoteSectionCost .segmentedControl {
+  border-color: rgba(194, 65, 12, 0.16);
+  background: rgba(255, 231, 220, 0.72);
+}
+
+.quoteSectionEarning .segmentedControl {
+  border-color: rgba(21, 128, 61, 0.16);
+  background: rgba(217, 251, 230, 0.74);
+}
+
+.quoteSectionCost .segmentedControl button.active {
+  color: var(--cost-dark);
+}
+
+.quoteSectionEarning .segmentedControl button.active {
+  color: var(--earning-dark);
+}
+
+.quoteSectionCost .calculatedLine {
+  border: 1px solid rgba(194, 65, 12, 0.2);
+  color: var(--cost-dark);
+  background: rgba(255, 231, 220, 0.74);
 }
 
 .segmentedControl {
@@ -815,9 +908,9 @@ h3 {
 .resultPanel {
   display: grid;
   gap: 1rem;
-  border-color: rgba(184, 50, 86, 0.25);
+  border-color: rgba(184, 50, 86, 0.18);
   background:
-    linear-gradient(135deg, rgba(184, 50, 86, 0.1), rgba(15, 118, 110, 0.08) 42%, rgba(180, 83, 9, 0.08)),
+    linear-gradient(135deg, rgba(255, 244, 237, 0.92), rgba(236, 253, 243, 0.84) 44%, rgba(255, 247, 230, 0.8)),
     #fff;
 }
 
@@ -879,12 +972,12 @@ h3 {
 }
 
 .resultValueTile.earning {
-  border-color: rgba(20, 115, 95, 0.2);
-  background: var(--good-bg);
+  border-color: rgba(21, 128, 61, 0.24);
+  background: var(--earning-bg);
 }
 
 .resultValueTile.earning strong {
-  color: var(--good);
+  color: var(--earning);
   font-size: clamp(2.25rem, 8.8vw, 3.7rem);
   line-height: 1;
   white-space: nowrap;
@@ -892,23 +985,71 @@ h3 {
 
 .resultBreakdown {
   display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  gap: 0.75rem;
+}
+
+.resultBreakdownGroup {
+  display: grid;
+  align-content: start;
   gap: 0.3rem;
   border: 1px solid rgba(223, 229, 226, 0.8);
   border-radius: 8px;
-  padding: 0.55rem;
-  background: rgba(255, 255, 255, 0.82);
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.resultBreakdownGroup h3 {
+  padding: 0.2rem 0.35rem 0.45rem;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+}
+
+.costGroup {
+  border-color: rgba(194, 65, 12, 0.22);
+  background: rgba(255, 244, 237, 0.78);
+}
+
+.costGroup h3 {
+  color: var(--cost-dark);
+}
+
+.earningGroup {
+  border-color: rgba(21, 128, 61, 0.22);
+  background: rgba(236, 253, 243, 0.82);
+}
+
+.earningGroup h3 {
+  color: var(--earning-dark);
 }
 
 .costRow {
   padding: 0.62rem 0.7rem;
   border-bottom: 1px solid rgba(223, 229, 226, 0.9);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.costGroup .costRow strong {
+  color: var(--cost-dark);
+}
+
+.earningGroup .costRow strong {
+  color: var(--earning-dark);
 }
 
 .costRow.emphasized {
   border-bottom: 0;
   padding: 0.72rem 0.78rem;
-  color: var(--secondary-dark);
-  background: var(--teal-bg);
+}
+
+.costGroup .costRow.emphasized {
+  color: var(--cost-dark);
+  background: var(--cost-soft);
+}
+
+.earningGroup .costRow.emphasized {
+  color: var(--earning-dark);
+  background: var(--earning-soft);
 }
 
 .formulaBox,
@@ -929,15 +1070,15 @@ h3 {
 }
 
 .metricTile {
-  border-color: rgba(124, 58, 237, 0.16);
+  border-color: rgba(21, 128, 61, 0.16);
   padding: 0.82rem;
-  background: var(--violet-bg);
+  background: var(--earning-bg);
 }
 
 .metricTile strong {
   display: block;
   margin-top: 0.25rem;
-  color: var(--secondary-dark);
+  color: var(--earning-dark);
 }
 
 .warning {
@@ -954,8 +1095,8 @@ h3 {
 }
 
 .warningGood {
-  color: var(--good);
-  background: var(--good-bg);
+  color: var(--earning-dark);
+  background: var(--earning-bg);
 }
 
 .warningDanger {
@@ -966,8 +1107,8 @@ h3 {
 .customPriceBox {
   display: flex;
   gap: 0.62rem;
-  color: var(--secondary-dark);
-  background: rgba(15, 118, 110, 0.08);
+  color: var(--earning-dark);
+  background: var(--earning-bg);
 }
 
 .customPriceBox div,
@@ -1500,6 +1641,10 @@ h3 {
   .resultHeaderValues {
     grid-template-columns: 1fr;
     min-width: 0;
+  }
+
+  .resultBreakdown {
+    grid-template-columns: 1fr;
   }
 
   .resultValueTile.earning strong {

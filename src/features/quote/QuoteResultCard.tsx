@@ -52,21 +52,28 @@ export function QuoteResultCard({
       </div>
 
       <div className="resultBreakdown">
-        <CostRow label="Koszt składników" value={result.ingredientsCost} />
-        <CostRow label="Opakowanie" value={result.packagingCost} />
-        <CostRow label="Dodatki" value={result.extrasCost} />
-        <CostRow label="Energia" value={result.energyCost} />
-        <CostRow label="Dowóz" value={result.deliveryCost} />
-        <CostRow label="Praca" value={result.laborCost} />
-        <CostRow label="Koszt bazowy" value={result.baseCost} emphasized />
-        <CostRow
-          label={`Dodatkowe koszty (${input.safetyMarginPercent}%)`}
-          value={result.safetyMarginValue}
-        />
-        <CostRow label="Łączny koszt" value={result.totalCost} emphasized />
-        <CostRow label="Zysk" value={result.profitValue} />
-        <CostRow label="Całkowity zarobek" value={result.totalEarnings} emphasized />
-        <CostRow label="Cena dokładna" value={result.exactPrice} />
+        <div className="resultBreakdownGroup costGroup">
+          <h3>Koszty</h3>
+          <CostRow label="Koszt składników" value={result.ingredientsCost} />
+          <CostRow label="Opakowanie" value={result.packagingCost} />
+          <CostRow label="Dodatki" value={result.extrasCost} />
+          <CostRow label="Energia" value={result.energyCost} />
+          <CostRow label="Dowóz" value={result.deliveryCost} />
+          <CostRow label="Praca" value={result.laborCost} />
+          <CostRow label="Koszt bazowy" value={result.baseCost} emphasized />
+          <CostRow
+            label={`Dodatkowe koszty (${input.safetyMarginPercent}%)`}
+            value={result.safetyMarginValue}
+          />
+          <CostRow label="Łączny koszt" value={result.totalCost} emphasized />
+        </div>
+
+        <div className="resultBreakdownGroup earningGroup">
+          <h3>Zarobek i cena</h3>
+          <CostRow label="Zysk" value={result.profitValue} />
+          <CostRow label="Całkowity zarobek" value={result.totalEarnings} emphasized />
+          <CostRow label="Cena dokładna" value={result.exactPrice} />
+        </div>
       </div>
 
       <div className="formulaBox">

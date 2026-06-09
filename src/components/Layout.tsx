@@ -1,4 +1,3 @@
-import { ChefHat } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { getPageTitle, navItems, type Page } from '../lib/navigation';
 
@@ -15,7 +14,7 @@ export function Layout({ activePage, onNavigate, children, toast }: LayoutProps)
       <header className="topBar">
         <button className="brand" type="button" onClick={() => onNavigate('home')}>
           <span className="brandMark" aria-hidden="true">
-            <ChefHat size={27} />
+            <img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="" className="brandIcon" />
           </span>
           <span>
             <strong>CakeCost</strong>
