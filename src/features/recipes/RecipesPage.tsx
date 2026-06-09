@@ -5,6 +5,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Money } from '../../components/Money';
 import { calculateRecipeIngredientsCost, getActiveLaborMinutes } from '../../lib/calculations';
 import { createId } from '../../lib/id';
+import { formatPanShape } from '../../lib/pans';
 import type { Ingredient, Recipe } from '../../lib/types';
 import { RecipeForm } from './RecipeForm';
 
@@ -193,6 +194,7 @@ function RecipeCard({ recipe, ingredients, onEdit, onDuplicate, onDelete }: Reci
           <span>{recipe.ingredients.length} składników</span>
           <span>{activeMinutes} min pracy</span>
           <span>{recipe.bakingTimeMinutes} min pieczenia</span>
+          {recipe.pan ? <span>{formatPanShape(recipe.pan)}</span> : null}
         </div>
         <div className="recipeCardCost">
           <span>Koszt składników</span>

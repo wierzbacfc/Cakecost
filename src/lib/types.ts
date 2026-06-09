@@ -23,12 +23,24 @@ export type RecipeIngredient = {
   unit: Unit;
 };
 
+export type PanShape =
+  | {
+      type: 'round';
+      diameterCm: number;
+    }
+  | {
+      type: 'rectangular';
+      widthCm: number;
+      heightCm: number;
+    };
+
 export type Recipe = {
   id: string;
   name: string;
   category: RecipeCategory;
   description?: string;
   formSize?: string;
+  pan?: PanShape;
   servings?: number;
   finalWeightGrams?: number;
   preparationTimeMinutes: number;
@@ -51,6 +63,8 @@ export type QuoteInput = {
   energyActivityHourlyCost: number;
   deliveryCost: number;
   includeDelivery: boolean;
+  panScaleEnabled?: boolean;
+  targetPan?: PanShape;
   hourlyRate: number;
   safetyMarginPercent: number;
   profitMode: ProfitMode;
@@ -73,6 +87,9 @@ export type QuoteResult = {
   totalEarnings: number;
   exactPrice: number;
   suggestedPrice: number;
+  panScale?: number;
+  scaledServings?: number;
+  scaledFinalWeightGrams?: number;
   pricePerServing?: number;
   pricePerKg?: number;
   effectiveHourlyProfit?: number;
@@ -84,6 +101,10 @@ export type QuoteHistoryItem = {
   recipeName: string;
   quoteName: string;
   date: string;
+  panScaleEnabled?: boolean;
+  sourcePan?: PanShape;
+  targetPan?: PanShape;
+  panScale?: number;
   result: QuoteResult;
   input: QuoteInput;
 };

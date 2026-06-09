@@ -6,6 +6,7 @@ import {
   mergeSampleCatalog,
   recipeSeedVersion
 } from './sampleData';
+import { inferPanFromText, isValidPanShape } from './pans';
 import type {
   AppData,
   AppDataExport,
@@ -200,6 +201,7 @@ function normalizeRecipe(value: Partial<Recipe>, fallbackDate: string): Recipe |
     category: value.category,
     description: value.description ?? '',
     formSize: value.formSize ?? '',
+    pan: isValidPanShape(value.pan) ? value.pan : inferPanFromText(value.formSize),
     servings: optionalPositiveNumber(value.servings),
     finalWeightGrams: optionalPositiveNumber(value.finalWeightGrams),
     preparationTimeMinutes: nonNegativeNumber(value.preparationTimeMinutes, 0),
@@ -234,6 +236,17 @@ function normalizeHistoryItem(
     value.result.totalEarnings,
     nonNegativeNumber(value.result.laborCost, 0) + nonNegativeNumber(value.result.profitValue, 0)
   ));
+  const targetPan = isValidPanShape(value.targetPan)
+    ? value.targetPan
+    : isValidPanShape(value.input.targetPan)
+      ? value.input.targetPan
+      : undefined;
+  const sourcePan = isValidPanShape(value.sourcePan) ? value.sourcePan : undefined;
+  const panScale = nonNegativeNumber(value.panScale, nonNegativeNumber(value.result.panScale, 1));
+  const panScaleEnabled =
+    value.panScaleEnabled === true ||
+    value.input.panScaleEnabled === true ||
+    Math.abs(panScale - 1) > 0.0001;
 
   return {
     id: value.id,
@@ -241,17 +254,24 @@ function normalizeHistoryItem(
     recipeName: value.recipeName,
     quoteName: value.quoteName?.trim() || value.recipeName,
     date: value.date ?? fallbackDate,
+    panScaleEnabled,
+    sourcePan,
+    targetPan,
+    panScale,
     result: {
       ...value.result,
       deliveryCost: roundCurrency(nonNegativeNumber(value.result.deliveryCost, 0)),
-      totalEarnings
+      totalEarnings,
+      panScale
     },
     input: {
       ...value.input,
       energyBakingHourlyCost,
       energyActivityHourlyCost,
       deliveryCost,
-      includeDelivery: value.input.includeDelivery === true
+      includeDelivery: value.input.includeDelivery === true,
+      panScaleEnabled,
+      targetPan
     }
   };
 }

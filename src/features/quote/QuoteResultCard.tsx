@@ -1,6 +1,8 @@
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Money } from '../../components/Money';
 import { getActiveLaborMinutes, roundCurrency } from '../../lib/calculations';
+import { formatDecimal } from '../../lib/format';
+import { formatPanShape } from '../../lib/pans';
 import type { QuoteInput, QuoteResult, Recipe } from '../../lib/types';
 
 type QuoteResultCardProps = {
@@ -82,6 +84,16 @@ export function QuoteResultCard({
           Cena sugerowana = cena dokładna zaokrąglona w górę do {input.roundTo} zł.
         </p>
       </div>
+
+      {input.panScaleEnabled && recipe.pan && input.targetPan ? (
+        <div className="formulaBox panFormulaBox">
+          <p>
+            Foremka z przepisu: {formatPanShape(recipe.pan)}. Twoja foremka:{' '}
+            {formatPanShape(input.targetPan)}. Składniki, koszt składników, porcje i masa zostały
+            przeliczone mnożnikiem {formatDecimal(result.panScale ?? 1, 2)}x.
+          </p>
+        </div>
+      ) : null}
 
       <div className="metricGrid">
         {result.pricePerServing !== undefined ? (

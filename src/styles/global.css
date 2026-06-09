@@ -494,6 +494,100 @@ h3 {
   padding-top: 1rem;
 }
 
+.sectionHint {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.panFields {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.panSection {
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 8px;
+  padding: 0.95rem;
+  background: var(--blue-bg);
+}
+
+.panCalculatorPanel {
+  border-color: rgba(180, 83, 9, 0.18);
+  background: var(--amber-bg);
+}
+
+.basePanSummary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.compactButton {
+  min-height: 38px;
+  padding: 0.48rem 0.72rem;
+  white-space: nowrap;
+}
+
+.collapseHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+}
+
+.collapseHeader svg {
+  flex: 0 0 auto;
+  color: var(--amber);
+  transition: transform 160ms ease;
+}
+
+.collapseHeader[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.collapseBody {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.scaledIngredientList {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.scaledIngredientRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid rgba(223, 229, 226, 0.82);
+  border-radius: 8px;
+  padding: 0.58rem 0.68rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.scaledIngredientRow span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.scaledIngredientRow strong {
+  flex: 0 0 auto;
+  color: var(--ink);
+  text-align: right;
+}
+
 .recipeIngredientList {
   display: grid;
   gap: 0.8rem;
@@ -796,6 +890,19 @@ h3 {
 .quoteSectionEarning .quoteSectionHeader span,
 .quoteSectionEarning .fieldLabel {
   color: var(--earning-dark);
+}
+
+.panQuoteSection {
+  order: 20;
+  border-color: rgba(37, 99, 235, 0.18);
+  background:
+    linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(255, 247, 230, 0.74)),
+    #fff;
+}
+
+.panQuoteSection .quoteSectionHeader span,
+.panQuoteSection .fieldLabel {
+  color: var(--blue);
 }
 
 .quoteSectionCost .segmentedControl {
@@ -1222,6 +1329,36 @@ h3 {
   border-top: 1px solid var(--line);
 }
 
+.recipeFormDialog .formGrid > .panSection {
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  box-shadow: 0 8px 20px rgba(39, 49, 58, 0.05);
+}
+
+.recipeFormDialog .panSection .subSectionHeader {
+  align-items: center;
+}
+
+.recipeFormDialog .panSection h3 {
+  font-size: 0.94rem;
+}
+
+.recipeFormDialog .panSection .sectionHint {
+  margin-top: 0.12rem;
+  font-size: 0.76rem;
+}
+
+.recipeFormDialog .panSection .panFields {
+  grid-template-columns: minmax(12rem, 0.85fr) minmax(10rem, 1fr);
+  align-items: end;
+  gap: 0.6rem;
+}
+
+.recipeFormDialog .panSection .calculatedLine {
+  padding: 0.55rem 0.65rem;
+}
+
 .recipeFormDialog textarea {
   min-height: 7.5rem;
 }
@@ -1604,6 +1741,15 @@ h3 {
     padding: 0.85rem;
   }
 
+  .recipeFormDialog .formGrid > .panSection {
+    margin-top: 0.65rem;
+    padding: 0.68rem;
+  }
+
+  .recipeFormDialog .panSection .panFields {
+    grid-template-columns: 1fr;
+  }
+
   .recipeFormDialog .formActions {
     padding: 0.75rem;
   }
@@ -1654,6 +1800,23 @@ h3 {
   .costRow,
   .calculatedLine {
     align-items: flex-start;
+  }
+
+  .scaledIngredientRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .basePanSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .compactButton {
+    width: 100%;
+  }
+
+  .scaledIngredientRow strong {
+    text-align: left;
   }
 
   .costRow strong,

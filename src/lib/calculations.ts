@@ -8,6 +8,7 @@ import type {
   RoundTo,
   Unit
 } from './types';
+import { scaleRecipeForPan } from './pans';
 
 export type ConvertedAmount = {
   amount: number;
@@ -191,7 +192,12 @@ export function calculateQuote(
   assertNonNegative(input.profitPercent ?? 0, 'Zysk procentowy');
   assertNonNegative(input.profitFixed ?? 0, 'Zysk kwotowy');
 
-  const ingredientsCost = calculateRecipeIngredientsCost(recipe, ingredients);
+  const scaledRecipeResult = input.panScaleEnabled
+    ? scaleRecipeForPan(recipe, input.targetPan)
+    : { recipe, scale: 1 };
+  const scaledRecipe = scaledRecipeResult.recipe;
+  const panScale = scaledRecipeResult.scale;
+  const ingredientsCost = calculateRecipeIngredientsCost(scaledRecipe, ingredients);
 
   if (ingredientsCost.errors.length > 0) {
     throw new Error(ingredientsCost.errors.map((error) => error.message).join('\n'));
@@ -237,13 +243,16 @@ export function calculateQuote(
     totalEarnings,
     exactPrice,
     suggestedPrice,
+    panScale,
+    scaledServings: scaledRecipe.servings,
+    scaledFinalWeightGrams: scaledRecipe.finalWeightGrams,
     pricePerServing:
-      recipe.servings && recipe.servings > 0
-        ? roundCurrency(suggestedPrice / recipe.servings)
+      scaledRecipe.servings && scaledRecipe.servings > 0
+        ? roundCurrency(suggestedPrice / scaledRecipe.servings)
         : undefined,
     pricePerKg:
-      recipe.finalWeightGrams && recipe.finalWeightGrams > 0
-        ? roundCurrency(suggestedPrice / (recipe.finalWeightGrams / 1000))
+      scaledRecipe.finalWeightGrams && scaledRecipe.finalWeightGrams > 0
+        ? roundCurrency(suggestedPrice / (scaledRecipe.finalWeightGrams / 1000))
         : undefined,
     effectiveHourlyProfit:
       activeHours > 0 ? roundCurrency(profitValue / activeHours) : undefined

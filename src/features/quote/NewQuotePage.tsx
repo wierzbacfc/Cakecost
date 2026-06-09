@@ -3,8 +3,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { EmptyState } from '../../components/EmptyState';
 import { Money } from '../../components/Money';
 import { NumberInput } from '../../components/NumberInput';
+import { PanFields } from '../../components/PanFields';
 import { calculateQuote, getActiveLaborMinutes } from '../../lib/calculations';
+import { formatDecimal } from '../../lib/format';
 import { createId } from '../../lib/id';
+import { calculatePanScale, formatPanShape, scalePanShape } from '../../lib/pans';
 import type {
   AppSettings,
   Ingredient,
@@ -50,17 +53,48 @@ export function NewQuotePage({
       return;
     }
 
-    setInput({ ...editingHistoryItem.input });
+    const recipe = recipes.find((item) => item.id === editingHistoryItem.recipeId);
+    const savedInput: QuoteInput = { ...editingHistoryItem.input };
+    const historyPanScale = editingHistoryItem.panScale ?? editingHistoryItem.result.panScale ?? 1;
+    const savedTargetPan = editingHistoryItem.targetPan ?? savedInput.targetPan;
+    const targetDiffersFromRecipe =
+      Boolean(recipe?.pan && savedTargetPan) &&
+      Math.abs(calculatePanScale(recipe?.pan, savedTargetPan) - 1) > 0.0001;
+    const historyWasScaled =
+      editingHistoryItem.panScaleEnabled === true ||
+      savedInput.panScaleEnabled === true ||
+      Math.abs(historyPanScale - 1) > 0.0001 ||
+      targetDiffersFromRecipe;
+
+    savedInput.panScaleEnabled = historyWasScaled;
+
+    if (historyWasScaled) {
+      savedInput.targetPan =
+        savedTargetPan ??
+        (recipe?.pan ? scalePanShape(recipe.pan, historyPanScale) : undefined);
+    } else if (!savedInput.targetPan && recipe?.pan) {
+      savedInput.targetPan = recipe.pan;
+    }
+
+    setInput(savedInput);
     setQuoteName(editingHistoryItem.quoteName);
     setCustomerPrice(0);
     setSavedMessage('');
-  }, [editingHistoryItem]);
+  }, [editingHistoryItem, recipes]);
 
   const selectedRecipe = recipes.find((recipe) => recipe.id === input.recipeId);
   const selectedRecipeActiveMinutes = selectedRecipe ? getActiveLaborMinutes(selectedRecipe) : 0;
   const selectedRecipeTotalMinutes = selectedRecipe
     ? selectedRecipeActiveMinutes + selectedRecipe.bakingTimeMinutes
     : 0;
+
+  useEffect(() => {
+    if (editingHistoryItem || !selectedRecipe?.pan || input.targetPan) {
+      return;
+    }
+
+    setInput((current) => ({ ...current, targetPan: selectedRecipe.pan }));
+  }, [editingHistoryItem, input.targetPan, selectedRecipe]);
 
   const quoteState = useMemo(() => {
     if (!selectedRecipe) {
@@ -90,14 +124,25 @@ export function NewQuotePage({
       return;
     }
 
+    const savedInput: QuoteInput = {
+      ...input,
+      panScaleEnabled: input.panScaleEnabled === true,
+      targetPan: input.panScaleEnabled ? input.targetPan ?? selectedRecipe.pan : input.targetPan
+    };
+    const savedTargetPan = savedInput.panScaleEnabled ? savedInput.targetPan : undefined;
+
     onSaveHistory({
       id: editingHistoryItem?.id ?? createId('quote'),
       recipeId: selectedRecipe.id,
       recipeName: selectedRecipe.name,
       quoteName: quoteName.trim() || selectedRecipe.name,
       date: editingHistoryItem?.date ?? new Date().toISOString(),
+      panScaleEnabled: savedInput.panScaleEnabled,
+      sourcePan: selectedRecipe.pan,
+      targetPan: savedTargetPan,
+      panScale: quoteState.result.panScale ?? 1,
       result: quoteState.result,
-      input: { ...input }
+      input: savedInput
     });
     setSavedMessage(editingHistoryItem ? 'Zmiany w wycenie zapisane.' : 'Wycena zapisana w historii.');
   }
@@ -160,7 +205,17 @@ export function NewQuotePage({
             <span className="fieldLabel">Przepis</span>
             <select
               value={input.recipeId}
-              onChange={(event) => updateInput('recipeId', event.target.value)}
+              onChange={(event) => {
+                const recipeId = event.target.value;
+                const nextRecipe = recipes.find((recipe) => recipe.id === recipeId);
+                setInput((current) => ({
+                  ...current,
+                  recipeId,
+                  panScaleEnabled: false,
+                  targetPan: nextRecipe?.pan
+                }));
+                setSavedMessage('');
+              }}
             >
               {recipes.map((recipe) => (
                 <option key={recipe.id} value={recipe.id}>
@@ -188,6 +243,76 @@ export function NewQuotePage({
                 <TimeMetric label="Sprzątanie" value={selectedRecipe.cleaningTimeMinutes} />
               </div>
             </div>
+          ) : null}
+
+          {selectedRecipe ? (
+            <section className="quoteSection panQuoteSection" aria-label="Foremka i przelicznik">
+              <div className="quoteSectionHeader">
+                <span>Foremka</span>
+                <small>Przelicz składniki, koszt składników, porcje i masę na inną formę.</small>
+              </div>
+
+              <div className="calculatedLine">
+                <span>Foremka z przepisu</span>
+                <strong>{formatPanShape(selectedRecipe.pan)}</strong>
+              </div>
+
+              {selectedRecipe.pan ? (
+                <>
+                  <div className="segmentedControl" aria-label="Przeliczanie foremki">
+                    <button
+                      className={!input.panScaleEnabled ? 'active' : ''}
+                      type="button"
+                      onClick={() => {
+                        setInput((current) => ({
+                          ...current,
+                          panScaleEnabled: false,
+                          targetPan: selectedRecipe.pan
+                        }));
+                        setSavedMessage('');
+                      }}
+                    >
+                      Bez zmian
+                    </button>
+                    <button
+                      className={input.panScaleEnabled ? 'active' : ''}
+                      type="button"
+                      onClick={() => {
+                        setInput((current) => ({
+                          ...current,
+                          panScaleEnabled: true,
+                          targetPan: current.targetPan ?? selectedRecipe.pan
+                        }));
+                        setSavedMessage('');
+                      }}
+                    >
+                      Przelicz
+                    </button>
+                  </div>
+
+                  {input.panScaleEnabled ? (
+                    <>
+                      <PanFields
+                        pan={input.targetPan ?? selectedRecipe.pan}
+                        onChange={(targetPan) => updateInput('targetPan', targetPan)}
+                      />
+                      <div className="calculatedLine">
+                        <span>Mnożnik składników</span>
+                        <strong>{formatDecimal(quoteState.result?.panScale ?? 1, 2)}x</strong>
+                      </div>
+                      <div className="warning warningSoft">
+                        Czasy pracy, pieczenia i sprzątania zostają z przepisu. Przy innej foremce
+                        czas pieczenia może wymagać ręcznej oceny.
+                      </div>
+                    </>
+                  ) : null}
+                </>
+              ) : (
+                <div className="warning warningSoft">
+                  Ten przepis nie ma zapisanej bazowej foremki. Uzupełnij ją w edycji przepisu.
+                </div>
+              )}
+            </section>
           ) : null}
 
           <section className="quoteSection quoteSectionCost" aria-label="Parametry kosztowe">
@@ -348,6 +473,7 @@ function createInitialInput(recipeId: string, settings: AppSettings): QuoteInput
     energyActivityHourlyCost: settings.defaultEnergyActivityHourlyCost,
     deliveryCost: settings.defaultDeliveryCost,
     includeDelivery: false,
+    panScaleEnabled: false,
     hourlyRate: settings.defaultHourlyRate,
     safetyMarginPercent: settings.defaultSafetyMarginPercent,
     profitMode: settings.defaultProfitMode,

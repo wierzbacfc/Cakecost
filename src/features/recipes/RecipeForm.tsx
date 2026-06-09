@@ -1,11 +1,14 @@
-import { Plus, Save, Trash2, X } from 'lucide-react';
+import { ChevronDown, Plus, Save, Trash2, X } from 'lucide-react';
 import { type FormEvent, useMemo, useState } from 'react';
 import { EmptyState } from '../../components/EmptyState';
 import { Money } from '../../components/Money';
 import { NumberInput } from '../../components/NumberInput';
+import { PanFields } from '../../components/PanFields';
 import { calculateRecipeIngredientsCost } from '../../lib/calculations';
+import { formatAmount, formatDecimal } from '../../lib/format';
 import { createId } from '../../lib/id';
-import type { Ingredient, Recipe, RecipeCategory, RecipeIngredient, Unit } from '../../lib/types';
+import { calculatePanScale, formatPanShape, inferPanFromText } from '../../lib/pans';
+import type { Ingredient, PanShape, Recipe, RecipeCategory, RecipeIngredient, Unit } from '../../lib/types';
 import { recipeCategories, units } from '../../lib/types';
 
 type RecipeFormProps = {
@@ -20,6 +23,7 @@ type RecipeDraft = {
   category: RecipeCategory;
   description: string;
   formSize: string;
+  pan: PanShape;
   servings: number;
   finalWeightGrams: number;
   preparationTimeMinutes: number;
@@ -40,11 +44,13 @@ const categoryLabels: Record<RecipeCategory, string> = {
 };
 
 export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeFormProps) {
+  const initialPan: PanShape = recipe?.pan ?? inferPanFromText(recipe?.formSize) ?? { type: 'round', diameterCm: 24 };
   const [draft, setDraft] = useState<RecipeDraft>({
     name: recipe?.name ?? '',
     category: recipe?.category ?? 'ciasto',
     description: recipe?.description ?? '',
     formSize: recipe?.formSize ?? '',
+    pan: initialPan,
     servings: recipe?.servings ?? 0,
     finalWeightGrams: recipe?.finalWeightGrams ?? 0,
     preparationTimeMinutes: recipe?.preparationTimeMinutes ?? 0,
@@ -53,6 +59,9 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
     cleaningTimeMinutes: recipe?.cleaningTimeMinutes ?? 0,
     ingredients: recipe?.ingredients.map((item) => ({ ...item })) ?? []
   });
+  const [targetPan, setTargetPan] = useState<PanShape>(initialPan);
+  const [isBasePanEditorOpen, setIsBasePanEditorOpen] = useState(false);
+  const [isPanCalculatorOpen, setIsPanCalculatorOpen] = useState(false);
   const [errors, setErrors] = useState<RecipeErrors>({});
 
   const ingredientCost = useMemo(
@@ -66,6 +75,11 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
   const costErrorsByIndex = useMemo(
     () => new Map(ingredientCost.errors.map((error) => [error.index, error.message])),
     [ingredientCost.errors]
+  );
+  const panScale = useMemo(() => calculatePanScale(draft.pan, targetPan), [draft.pan, targetPan]);
+  const ingredientNamesById = useMemo(
+    () => new Map(ingredients.map((ingredient) => [ingredient.id, ingredient.name])),
+    [ingredients]
   );
 
   function updateDraft<Value extends keyof RecipeDraft>(field: Value, value: RecipeDraft[Value]) {
@@ -145,20 +159,34 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
     }
 
     const now = new Date().toISOString();
+    const shouldApplyPanCalculator = isPanCalculatorOpen && !arePansEqual(draft.pan, targetPan);
+    const savedPan = shouldApplyPanCalculator ? targetPan : draft.pan;
+    const savedFormSize = shouldApplyPanCalculator ? formatPanShape(targetPan) : draft.formSize.trim();
+    const savedServings = shouldApplyPanCalculator
+      ? Math.max(1, Math.round(draft.servings * panScale))
+      : draft.servings;
+    const savedFinalWeightGrams = shouldApplyPanCalculator
+      ? Math.max(1, Math.round(draft.finalWeightGrams * panScale))
+      : draft.finalWeightGrams;
+    const savedIngredients = draft.ingredients.map((item) => ({
+      ...item,
+      amount: shouldApplyPanCalculator ? Math.round(item.amount * panScale * 100) / 100 : item.amount
+    }));
 
     onSave({
       id: recipe?.id ?? createId('recipe'),
       name: draft.name.trim(),
       category: draft.category,
       description: draft.description.trim(),
-      formSize: draft.formSize.trim(),
-      servings: draft.servings > 0 ? draft.servings : undefined,
-      finalWeightGrams: draft.finalWeightGrams > 0 ? draft.finalWeightGrams : undefined,
+      formSize: savedFormSize,
+      pan: savedPan,
+      servings: savedServings > 0 ? savedServings : undefined,
+      finalWeightGrams: savedFinalWeightGrams > 0 ? savedFinalWeightGrams : undefined,
       preparationTimeMinutes: draft.preparationTimeMinutes,
       bakingTimeMinutes: draft.bakingTimeMinutes,
       decorationTimeMinutes: draft.decorationTimeMinutes,
       cleaningTimeMinutes: draft.cleaningTimeMinutes,
-      ingredients: draft.ingredients.map((item) => ({ ...item })),
+      ingredients: savedIngredients,
       createdAt: recipe?.createdAt ?? now,
       updatedAt: now
     });
@@ -265,6 +293,66 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
           onValueChange={(value) => updateDraft('cleaningTimeMinutes', value)}
         />
       </div>
+
+      <section className="subSection panSection">
+        <div className="subSectionHeader">
+          <div>
+            <h3>Foremka przepisu</h3>
+            <p className="sectionHint">Bazowy rozmiar, z którego liczone są składniki w przepisie.</p>
+          </div>
+        </div>
+        <div className="basePanSummary">
+          <div className="calculatedLine">
+            <span>Foremka bazowa</span>
+            <strong>{formatPanShape(draft.pan)}</strong>
+          </div>
+          <button
+            className="button buttonGhost compactButton"
+            type="button"
+            onClick={() => setIsBasePanEditorOpen((current) => !current)}
+          >
+            {isBasePanEditorOpen ? 'Ukryj edycję' : 'Edytuj foremkę bazową'}
+          </button>
+        </div>
+        {isBasePanEditorOpen ? (
+          <PanFields pan={draft.pan} onChange={(pan) => updateDraft('pan', pan)} />
+        ) : null}
+      </section>
+
+      <section className="subSection panSection panCalculatorPanel">
+        <button
+          className="collapseHeader"
+          type="button"
+          aria-expanded={isPanCalculatorOpen}
+          onClick={() => setIsPanCalculatorOpen((current) => !current)}
+        >
+          <div>
+            <h3>Przelicz składniki na inną foremkę</h3>
+            <p className="sectionHint">Podgląd nie zmienia przepisu, tylko pokazuje nowe ilości.</p>
+          </div>
+          <ChevronDown size={20} aria-hidden="true" />
+        </button>
+        {isPanCalculatorOpen ? (
+          <div className="collapseBody">
+            <PanFields pan={targetPan} onChange={setTargetPan} />
+        <div className="calculatedLine">
+          <span>Mnożnik składników</span>
+          <strong>{formatDecimal(panScale, 2)}x</strong>
+        </div>
+        <div className="scaledIngredientList">
+          {draft.ingredients.map((ingredient, index) => (
+            <div className="scaledIngredientRow" key={`${ingredient.ingredientId}-${index}`}>
+              <span>{ingredientNamesById.get(ingredient.ingredientId) ?? 'Składnik'}</span>
+              <strong>
+                {formatAmount(ingredient.amount, ingredient.unit)} →{' '}
+                {formatAmount(Math.round(ingredient.amount * panScale * 100) / 100, ingredient.unit)}
+              </strong>
+            </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </section>
 
       <section className="subSection">
         <div className="subSectionHeader">
@@ -384,4 +472,21 @@ function getRecipeUnitForIngredient(ingredient: Ingredient): Unit {
   }
 
   return 'szt';
+}
+
+function arePansEqual(first: PanShape, second: PanShape) {
+  if (first.type !== second.type) {
+    return false;
+  }
+
+  if (first.type === 'round' && second.type === 'round') {
+    return first.diameterCm === second.diameterCm;
+  }
+
+  return (
+    first.type === 'rectangular' &&
+    second.type === 'rectangular' &&
+    first.widthCm === second.widthCm &&
+    first.heightCm === second.heightCm
+  );
 }

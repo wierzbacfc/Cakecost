@@ -4,6 +4,7 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { EmptyState } from '../../components/EmptyState';
 import { Money } from '../../components/Money';
 import { formatDate } from '../../lib/format';
+import { formatPanShape } from '../../lib/pans';
 import type { QuoteHistoryItem } from '../../lib/types';
 
 type HistoryPageProps = {
@@ -101,6 +102,11 @@ export function HistoryPage({ history, onDelete, onRename, onEdit }: HistoryPage
                   <span className="miniMetricEarning">
                     Zysk: <Money value={item.result.profitValue} />
                   </span>
+                  {(item.panScaleEnabled ?? item.input.panScaleEnabled) && (item.targetPan ?? item.input.targetPan) ? (
+                    <span className="miniMetricPrice">
+                      Foremka: {formatPanShape(item.targetPan ?? item.input.targetPan)}
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <div className="itemActions">

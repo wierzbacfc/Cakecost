@@ -1,7 +1,8 @@
 import { calculateIngredientUnitPrice } from './calculations';
+import { inferPanFromText } from './pans';
 import type { AppData, AppSettings, Ingredient, Recipe, Unit } from './types';
 
-export const recipeSeedVersion = 'moje-wypieki-links-2026-06-09';
+export const recipeSeedVersion = 'moje-wypieki-links-2026-06-09-lemon-curd';
 
 export const defaultSettings: AppSettings = {
   defaultHourlyRate: 40,
@@ -276,6 +277,36 @@ function createMojeWypiekiRecipes(now: string): Recipe[] {
         'Masa serowa: 400 g puree z mango; 800 g twarogu lub serka typu philadelphia; 180 g drobnego cukru; 6 dużych jajek; 20 ml soku z cytryny; 2 łyżki mąki pszennej; 1 łyżka skrobi ziemniaczanej.',
         'Krem: 125 g mascarpone; 100 ml śmietanki kremówki 36%; 30 g puree z mango; ziarenka granatu do posypania.',
         'Czasy ze źródła: podpieczenie spodu ok. 8 min w 180°C, pieczenie sernika ok. 1 h 20 min w 160°C, chłodzenie w lodówce ok. 12 h.'
+      ]
+    ),
+    createRecipe(
+      now,
+      'mojewypieki-sernik-z-lemon-curd',
+      'Sernik z lemon curd',
+      'tortownica 20 cm',
+      12,
+      1800,
+      45,
+      65,
+      20,
+      20,
+      [
+        { ingredientId: ingredientIds.digestiveCookies, amount: 250, unit: 'g' },
+        { ingredientId: ingredientIds.butter, amount: 115, unit: 'g' },
+        { ingredientId: ingredientIds.curd, amount: 750, unit: 'g' },
+        { ingredientId: ingredientIds.cream36, amount: 250, unit: 'ml' },
+        { ingredientId: ingredientIds.sugar, amount: 260, unit: 'g' },
+        { ingredientId: ingredientIds.lemon, amount: 2, unit: 'szt' },
+        { ingredientId: ingredientIds.eggs, amount: 4, unit: 'szt' },
+        { ingredientId: ingredientIds.lemonJuice, amount: 30, unit: 'ml' }
+      ],
+      [
+        'Źródło: Moje Wypieki, https://mojewypieki.com/przepis/sernik-z-lemon-curd',
+        'Oryginalne składniki:',
+        'Spód: 250 g ciastek pełnoziarnistych typu digestive; 70 g roztopionego masła.',
+        'Masa serowa: 750 g twarogu półtłustego lub tłustego, zmielonego trzykrotnie; 250 ml śmietanki kremówki 36% lub 30%; 150 g drobnego cukru; 2 łyżeczki otartej skórki z cytryny; 3 jajka.',
+        'Lemon curd: 45 g masła; 110 g drobnego cukru; 1 jajko; 1 łyżeczka otartej skórki z cytryny; 2 łyżki soku z cytryny.',
+        'Czasy ze źródła: chłodzenie spodu 30 min, pieczenie sernika ok. 60-70 min w 160°C w kąpieli wodnej, chłodzenie w lodówce najlepiej przez noc.'
       ]
     ),
     createRecipe(
@@ -560,6 +591,7 @@ function createRecipe(
     category: 'ciasto',
     description: descriptionLines.join('\n'),
     formSize,
+    pan: inferPanFromText(formSize),
     servings,
     finalWeightGrams,
     preparationTimeMinutes,
