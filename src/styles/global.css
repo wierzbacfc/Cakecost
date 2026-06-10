@@ -1617,6 +1617,39 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.updatePrompt {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  max-width: 760px;
+  margin: 0 auto;
+  border: 1px solid rgba(15, 118, 110, 0.22);
+  border-radius: 8px;
+  padding: 0.85rem;
+  color: var(--secondary-dark);
+  background:
+    linear-gradient(135deg, rgba(236, 253, 243, 0.98), rgba(255, 247, 230, 0.94)),
+    #fff;
+  box-shadow: 0 18px 50px rgba(39, 49, 58, 0.18);
+}
+
+.updatePrompt div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.updatePrompt span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
 .bottomNav {
   position: fixed;
   right: 0;
@@ -1827,6 +1860,14 @@ h3 {
   .toast {
     right: 0.75rem;
     bottom: 5.4rem;
+  }
+
+  .updatePrompt {
+    right: 0.75rem;
+    bottom: 5.25rem;
+    left: 0.75rem;
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

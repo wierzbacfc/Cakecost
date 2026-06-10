@@ -8,6 +8,7 @@ import { RecipesPage } from '../features/recipes/RecipesPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { ShoppingListPage } from '../features/shopping/ShoppingListPage';
 import type { Page } from '../lib/navigation';
+import { applyServiceWorkerUpdate } from '../registerServiceWorker';
 import {
   clearStoredData,
   createEmptyData,
@@ -21,11 +22,24 @@ export function App() {
   const [activePage, setActivePage] = useState<Page>('home');
   const [editingHistoryItem, setEditingHistoryItem] = useState<QuoteHistoryItem | null>(null);
   const [toast, setToast] = useState('');
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const toastTimeout = useRef<number>();
 
   useEffect(() => {
     saveAppData(data);
   }, [data]);
+
+  useEffect(() => {
+    function handleUpdateAvailable() {
+      setUpdateAvailable(true);
+    }
+
+    window.addEventListener('cakecost:update-available', handleUpdateAvailable);
+
+    return () => {
+      window.removeEventListener('cakecost:update-available', handleUpdateAvailable);
+    };
+  }, []);
 
   function notify(message: string) {
     setToast(message);
@@ -134,7 +148,8 @@ export function App() {
   }
 
   return (
-    <Layout activePage={activePage} onNavigate={navigate} toast={toast}>
+    <>
+      <Layout activePage={activePage} onNavigate={navigate} toast={toast}>
       {activePage === 'home' ? (
         <HomePage
           ingredientCount={data.ingredients.length}
@@ -199,6 +214,19 @@ export function App() {
           onClearAll={clearAllData}
         />
       ) : null}
-    </Layout>
+      </Layout>
+
+      {updateAvailable ? (
+        <div className="updatePrompt" role="status" aria-live="polite">
+          <div>
+            <strong>Dostępna jest nowa wersja CakeCost</strong>
+            <span>Kliknij, żeby odświeżyć aplikację bez czyszczenia danych w telefonie.</span>
+          </div>
+          <button className="button buttonPrimary compactButton" type="button" onClick={applyServiceWorkerUpdate}>
+            Zaktualizuj
+          </button>
+        </div>
+      ) : null}
+    </>
   );
 }
