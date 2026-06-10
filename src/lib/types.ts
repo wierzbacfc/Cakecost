@@ -109,6 +109,31 @@ export type QuoteHistoryItem = {
   input: QuoteInput;
 };
 
+export type ShoppingRecipeSelection = {
+  recipeId: string;
+  recipeName: string;
+  quantity: number;
+};
+
+export type SavedShoppingListLine = {
+  ingredientId: string;
+  ingredientName: string;
+  amount: number;
+  unit: BaseUnit;
+  estimatedCost: number;
+  recipeNames: string[];
+};
+
+export type SavedShoppingList = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  selections: ShoppingRecipeSelection[];
+  lines: SavedShoppingListLine[];
+  totalEstimatedCost: number;
+};
+
 export type AppSettings = {
   defaultHourlyRate: number;
   defaultSafetyMarginPercent: number;
@@ -125,6 +150,7 @@ export type AppData = {
   ingredients: Ingredient[];
   recipes: Recipe[];
   history: QuoteHistoryItem[];
+  shoppingLists: SavedShoppingList[];
   settings: AppSettings;
 };
 

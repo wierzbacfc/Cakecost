@@ -15,7 +15,14 @@ import {
   loadAppData,
   saveAppData
 } from '../lib/storage';
-import type { AppData, AppSettings, Ingredient, QuoteHistoryItem, Recipe } from '../lib/types';
+import type {
+  AppData,
+  AppSettings,
+  Ingredient,
+  QuoteHistoryItem,
+  Recipe,
+  SavedShoppingList
+} from '../lib/types';
 
 export function App() {
   const [data, setData] = useState<AppData>(() => loadAppData());
@@ -129,6 +136,24 @@ export function App() {
     setActivePage('quote');
   }
 
+  function saveShoppingList(list: SavedShoppingList) {
+    setData((current) => ({
+      ...current,
+      shoppingLists: current.shoppingLists.some((item) => item.id === list.id)
+        ? current.shoppingLists.map((item) => (item.id === list.id ? list : item))
+        : [list, ...current.shoppingLists]
+    }));
+    notify('Lista zakupów zapisana.');
+  }
+
+  function deleteShoppingList(listId: string) {
+    setData((current) => ({
+      ...current,
+      shoppingLists: current.shoppingLists.filter((item) => item.id !== listId)
+    }));
+    notify('Lista zakupów usunięta.');
+  }
+
   function updateSettings(settings: AppSettings) {
     setData((current) => ({
       ...current,
@@ -181,6 +206,9 @@ export function App() {
         <ShoppingListPage
           recipes={data.recipes}
           ingredients={data.ingredients}
+          savedLists={data.shoppingLists}
+          onSaveList={saveShoppingList}
+          onDeleteList={deleteShoppingList}
           onOpenRecipes={() => navigate('recipes')}
         />
       ) : null}

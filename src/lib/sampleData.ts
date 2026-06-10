@@ -2,7 +2,7 @@ import { calculateIngredientUnitPrice } from './calculations';
 import { inferPanFromText } from './pans';
 import type { AppData, AppSettings, Ingredient, Recipe, Unit } from './types';
 
-export const recipeSeedVersion = 'moje-wypieki-links-2026-06-10-babeczki-jogurtowe';
+export const recipeSeedVersion = 'moje-wypieki-links-2026-06-10-ciastka-owsiane';
 
 export const defaultSettings: AppSettings = {
   defaultHourlyRate: 40,
@@ -19,6 +19,7 @@ export const defaultSettings: AppSettings = {
 const ingredientIds = {
   flour: 'sample-flour',
   sugar: 'sample-sugar',
+  brownSugar: 'sample-brown-sugar',
   butter: 'sample-butter',
   eggs: 'sample-eggs',
   mascarpone: 'sample-mascarpone',
@@ -35,6 +36,7 @@ const ingredientIds = {
   honey: 'sample-honey',
   yeast: 'sample-yeast',
   raisins: 'sample-raisins',
+  oats: 'sample-oats',
   walnuts: 'sample-walnuts',
   powderedSugar: 'sample-powdered-sugar',
   milk: 'sample-milk',
@@ -83,6 +85,7 @@ export function createSampleData(now = new Date().toISOString()): AppData {
     ingredients: catalog.ingredients,
     recipes: catalog.recipes,
     history: [],
+    shoppingLists: [],
     settings: { ...defaultSettings }
   };
 }
@@ -92,6 +95,7 @@ export function createEmptyData(): AppData {
     ingredients: [],
     recipes: [],
     history: [],
+    shoppingLists: [],
     settings: { ...defaultSettings }
   };
 }
@@ -135,6 +139,7 @@ function createSampleIngredients(now: string): Ingredient[] {
   return [
     createIngredient(ingredientIds.flour, 'Mąka pszenna', 5, 1, 'kg', now),
     createIngredient(ingredientIds.sugar, 'Cukier', 5, 1, 'kg', now),
+    createIngredient(ingredientIds.brownSugar, 'Cukier brązowy', 7, 500, 'g', now),
     createIngredient(ingredientIds.butter, 'Masło', 9, 200, 'g', now),
     createIngredient(ingredientIds.eggs, 'Jajka', 12, 10, 'szt', now),
     createIngredient(ingredientIds.mascarpone, 'Mascarpone', 14, 250, 'g', now),
@@ -151,6 +156,7 @@ function createSampleIngredients(now: string): Ingredient[] {
     createIngredient(ingredientIds.honey, 'Miód', 18, 400, 'g', now),
     createIngredient(ingredientIds.yeast, 'Drożdże świeże', 3, 100, 'g', now),
     createIngredient(ingredientIds.raisins, 'Rodzynki', 9, 200, 'g', now),
+    createIngredient(ingredientIds.oats, 'Płatki owsiane', 6, 500, 'g', now),
     createIngredient(ingredientIds.walnuts, 'Orzechy włoskie', 16, 200, 'g', now),
     createIngredient(ingredientIds.powderedSugar, 'Cukier puder', 5, 400, 'g', now),
     createIngredient(ingredientIds.milk, 'Mleko', 4, 1, 'l', now),
@@ -561,6 +567,38 @@ function createMojeWypiekiRecipes(now: string): Recipe[] {
         'Czasy ze źródła: pieczenie około 25-30 min w 170°C. Foremki sugerowane przez autorkę: ok. 9 x 4,5 cm każda.'
       ],
       'babeczki'
+    ),
+    createRecipe(
+      now,
+      'mojewypieki-ciastka-owsiane',
+      'Ciastka owsiane',
+      '2 płaskie blachy, 20 szt.',
+      20,
+      900,
+      45,
+      10,
+      0,
+      10,
+      [
+        { ingredientId: ingredientIds.butter, amount: 115, unit: 'g' },
+        { ingredientId: ingredientIds.brownSugar, amount: 70, unit: 'g' },
+        { ingredientId: ingredientIds.sugar, amount: 50, unit: 'g' },
+        { ingredientId: ingredientIds.vanillaExtract, amount: 5, unit: 'ml' },
+        { ingredientId: ingredientIds.eggs, amount: 1, unit: 'szt' },
+        { ingredientId: ingredientIds.flour, amount: 125, unit: 'g' },
+        { ingredientId: ingredientIds.cinnamon, amount: 1.5, unit: 'g' },
+        { ingredientId: ingredientIds.bakingSoda, amount: 2.5, unit: 'g' },
+        { ingredientId: ingredientIds.salt, amount: 1, unit: 'g' },
+        { ingredientId: ingredientIds.oats, amount: 150, unit: 'g' },
+        { ingredientId: ingredientIds.raisins, amount: 70, unit: 'g' }
+      ],
+      [
+        'Źródło: Moje Wypieki, https://mojewypieki.com/przepis/ciastka-owsiane',
+        'Oryginalne składniki:',
+        '115 g masła; 70 g jasnego i miałkiego brązowego cukru; 50 g drobnego cukru do wypieków; 1 łyżeczka ekstraktu z wanilii; 1 duże jajko; 125 g mąki pszennej; pół łyżeczki zmielonego cynamonu; pół łyżeczki sody oczyszczonej; 1/4 łyżeczki soli; 150 g płatków owsianych; 70 g rodzynków.',
+        'Czasy ze źródła: ciasto odstawić na 30 min, piec około 10 min w 170°C, zostawić 15 min na blasze po wyjęciu.'
+      ],
+      'ciasteczka'
     ),
     createRecipe(
       now,

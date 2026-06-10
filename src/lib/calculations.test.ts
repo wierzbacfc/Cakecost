@@ -152,7 +152,7 @@ describe('calculations', () => {
     const data = createSampleData('2026-01-01T00:00:00.000Z');
 
     expect(data.ingredients.length).toBeGreaterThanOrEqual(30);
-    expect(data.recipes).toHaveLength(12);
+    expect(data.recipes).toHaveLength(13);
     expect(data.recipes.map((sampleRecipe) => sampleRecipe.name)).toEqual([
       'Sernik nowojorski (przepis II)',
       'Sernik z mango',
@@ -165,6 +165,7 @@ describe('calculations', () => {
       'Kruche ciasto z malinami i lekką budyniową pianką',
       'Mini serniczki z truskawkami',
       'Babeczki jogurtowe z nutką cytrynową',
+      'Ciastka owsiane',
       'Ciasto marchewkowe, najlepsze'
     ]);
 

@@ -18,6 +18,9 @@ import type {
   Recipe,
   RecipeCategory,
   RoundTo,
+  SavedShoppingList,
+  SavedShoppingListLine,
+  ShoppingRecipeSelection,
   Unit
 } from './types';
 import { recipeCategories, units } from './types';
@@ -105,11 +108,15 @@ export function normalizeAppData(value: Partial<AppDataExport>): AppData {
   const history = Array.isArray(value.history)
     ? value.history.map((item) => normalizeHistoryItem(item, now)).filter(Boolean)
     : [];
+  const shoppingLists = Array.isArray(value.shoppingLists)
+    ? value.shoppingLists.map((list) => normalizeShoppingList(list, now)).filter(Boolean)
+    : [];
 
   return {
     ingredients: ingredients as Ingredient[],
     recipes: recipes as Recipe[],
     history: history as QuoteHistoryItem[],
+    shoppingLists: shoppingLists as SavedShoppingList[],
     settings
   };
 }
@@ -276,8 +283,88 @@ function normalizeHistoryItem(
   };
 }
 
+function normalizeShoppingList(
+  value: Partial<SavedShoppingList>,
+  fallbackDate: string
+): SavedShoppingList | null {
+  if (!value.id || !value.name) {
+    return null;
+  }
+
+  const selections = Array.isArray(value.selections)
+    ? value.selections.map(normalizeShoppingSelection).filter(Boolean)
+    : [];
+  const lines = Array.isArray(value.lines)
+    ? value.lines.map(normalizeShoppingLine).filter(Boolean)
+    : [];
+
+  return {
+    id: value.id,
+    name: value.name.trim() || 'Lista zakupów',
+    createdAt: value.createdAt ?? fallbackDate,
+    updatedAt: value.updatedAt ?? value.createdAt ?? fallbackDate,
+    selections: selections as ShoppingRecipeSelection[],
+    lines: lines as SavedShoppingListLine[],
+    totalEstimatedCost: roundCurrency(
+      nonNegativeNumber(
+        value.totalEstimatedCost,
+        (lines as SavedShoppingListLine[]).reduce((sum, line) => sum + line.estimatedCost, 0)
+      )
+    )
+  };
+}
+
+function normalizeShoppingSelection(
+  value: Partial<ShoppingRecipeSelection>
+): ShoppingRecipeSelection | null {
+  if (!value.recipeId || !value.recipeName) {
+    return null;
+  }
+
+  const quantity = Math.round(nonNegativeNumber(value.quantity, 0));
+
+  if (quantity <= 0) {
+    return null;
+  }
+
+  return {
+    recipeId: value.recipeId,
+    recipeName: value.recipeName,
+    quantity
+  };
+}
+
+function normalizeShoppingLine(
+  value: Partial<SavedShoppingListLine>
+): SavedShoppingListLine | null {
+  if (!value.ingredientId || !value.ingredientName || !isBaseUnit(value.unit)) {
+    return null;
+  }
+
+  const amount = nonNegativeNumber(value.amount, 0);
+
+  if (amount <= 0) {
+    return null;
+  }
+
+  return {
+    ingredientId: value.ingredientId,
+    ingredientName: value.ingredientName,
+    amount,
+    unit: value.unit,
+    estimatedCost: roundCurrency(nonNegativeNumber(value.estimatedCost, 0)),
+    recipeNames: Array.isArray(value.recipeNames)
+      ? value.recipeNames.filter((name): name is string => typeof name === 'string' && name.trim() !== '')
+      : []
+  };
+}
+
 function isUnit(value: unknown): value is Unit {
   return typeof value === 'string' && units.includes(value as Unit);
+}
+
+function isBaseUnit(value: unknown): value is SavedShoppingListLine['unit'] {
+  return value === 'g' || value === 'ml' || value === 'szt';
 }
 
 function isRecipeCategory(value: unknown): value is RecipeCategory {
