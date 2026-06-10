@@ -2,7 +2,7 @@ import { calculateIngredientUnitPrice } from './calculations';
 import { inferPanFromText } from './pans';
 import type { AppData, AppSettings, Ingredient, Recipe, Unit } from './types';
 
-export const recipeSeedVersion = 'moje-wypieki-links-2026-06-09-lemon-curd';
+export const recipeSeedVersion = 'moje-wypieki-links-2026-06-10-babeczki-jogurtowe';
 
 export const defaultSettings: AppSettings = {
   defaultHourlyRate: 40,
@@ -42,6 +42,7 @@ const ingredientIds = {
   potatoFlour: 'sample-potato-flour',
   carrots: 'sample-carrots',
   oil: 'sample-oil',
+  yogurt: 'sample-yogurt',
   bakingSoda: 'sample-baking-soda',
   gingerbreadSpice: 'sample-gingerbread-spice',
   creamCheese: 'sample-cream-cheese',
@@ -157,6 +158,7 @@ function createSampleIngredients(now: string): Ingredient[] {
     createIngredient(ingredientIds.potatoFlour, 'Skrobia ziemniaczana', 6, 500, 'g', now),
     createIngredient(ingredientIds.carrots, 'Marchew', 4, 1, 'kg', now),
     createIngredient(ingredientIds.oil, 'Olej rzepakowy', 11, 1, 'l', now),
+    createIngredient(ingredientIds.yogurt, 'Jogurt naturalny', 4, 400, 'g', now),
     createIngredient(ingredientIds.bakingSoda, 'Soda oczyszczona', 3, 80, 'g', now),
     createIngredient(ingredientIds.gingerbreadSpice, 'Przyprawa do piernika', 4, 40, 'g', now),
     createIngredient(ingredientIds.creamCheese, 'Serek śmietankowy', 8, 200, 'g', now),
@@ -531,6 +533,37 @@ function createMojeWypiekiRecipes(now: string): Recipe[] {
     ),
     createRecipe(
       now,
+      'mojewypieki-babeczki-jogurtowe-z-nutka-cytrynowa',
+      'Babeczki jogurtowe z nutką cytrynową',
+      '6 foremek mini-babeczek ok. 9 x 4,5 cm',
+      6,
+      850,
+      25,
+      28,
+      15,
+      10,
+      [
+        { ingredientId: ingredientIds.yogurt, amount: 125, unit: 'g' },
+        { ingredientId: ingredientIds.butter, amount: 75, unit: 'g' },
+        { ingredientId: ingredientIds.eggs, amount: 2, unit: 'szt' },
+        { ingredientId: ingredientIds.lemon, amount: 1, unit: 'szt' },
+        { ingredientId: ingredientIds.flour, amount: 150, unit: 'g' },
+        { ingredientId: ingredientIds.bakingSoda, amount: 2.5, unit: 'g' },
+        { ingredientId: ingredientIds.salt, amount: 1, unit: 'g' },
+        { ingredientId: ingredientIds.sugar, amount: 125, unit: 'g' },
+        { ingredientId: ingredientIds.powderedSugar, amount: 200, unit: 'g' }
+      ],
+      [
+        'Źródło: Moje Wypieki, https://mojewypieki.com/przepis/babeczki-jogurtowe-z-nutka-cytrynowa',
+        'Oryginalne składniki:',
+        'Babeczki: 125 g naturalnego jogurtu; 75 g roztopionego masła; 2 duże jajka; skórka otarta z 1 cytryny; 150 g mąki pszennej; pół łyżeczki sody oczyszczonej; szczypta soli; 125 g drobnego cukru do wypieków.',
+        'Lukier cytrynowy: 200 g cukru pudru; sok z 1 cytryny. W wycenie cytryna jest liczona jako 1 sztuka łącznie do skórki i soku.',
+        'Czasy ze źródła: pieczenie około 25-30 min w 170°C. Foremki sugerowane przez autorkę: ok. 9 x 4,5 cm każda.'
+      ],
+      'babeczki'
+    ),
+    createRecipe(
+      now,
       'mojewypieki-ciasto-marchewkowe-najlepsze',
       'Ciasto marchewkowe, najlepsze',
       'tortownica 20 cm',
@@ -583,12 +616,13 @@ function createRecipe(
   decorationTimeMinutes: number,
   cleaningTimeMinutes: number,
   ingredients: Recipe['ingredients'],
-  descriptionLines: string[]
+  descriptionLines: string[],
+  category: Recipe['category'] = 'ciasto'
 ): Recipe {
   return {
     id,
     name,
-    category: 'ciasto',
+    category,
     description: descriptionLines.join('\n'),
     formSize,
     pan: inferPanFromText(formSize),
