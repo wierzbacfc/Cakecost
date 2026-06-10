@@ -1,4 +1,4 @@
-import { BookOpen, Calculator, History, Package, Settings } from 'lucide-react';
+import { BookOpen, Calculator, History, Package, Settings, ShoppingBasket } from 'lucide-react';
 import type { Page } from '../../lib/navigation';
 
 type HomePageProps = {
@@ -10,6 +10,7 @@ type HomePageProps = {
 
 const actions = [
   { page: 'quote' as const, label: 'Nowa wycena', icon: Calculator },
+  { page: 'shopping' as const, label: 'Lista zakupów', icon: ShoppingBasket },
   { page: 'recipes' as const, label: 'Przepisy', icon: BookOpen },
   { page: 'ingredients' as const, label: 'Składniki', icon: Package },
   { page: 'history' as const, label: 'Historia wycen', icon: History },

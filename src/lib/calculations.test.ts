@@ -3,6 +3,7 @@ import {
   calculateIngredientUnitPrice,
   calculateQuote,
   calculateRecipeIngredientsCost,
+  generateShoppingList,
   roundPrice
 } from './calculations';
 import { createSampleData } from './sampleData';
@@ -121,6 +122,30 @@ describe('calculations', () => {
     expect(result.safetyMarginValue).toBe(11);
     expect(result.totalCost).toBe(120);
     expect(result.suggestedPrice).toBe(140);
+  });
+
+  it('generuje listę zakupów ze zsumowanymi składnikami', () => {
+    const secondRecipe: Recipe = {
+      ...recipe,
+      id: 'second-recipe',
+      name: 'Drugie ciasto',
+      ingredients: [
+        { ingredientId: 'flour', amount: 0.5, unit: 'kg' },
+        { ingredientId: 'milk', amount: 250, unit: 'ml' }
+      ]
+    };
+
+    const result = generateShoppingList([recipe, secondRecipe], [flour, milk], [
+      { recipeId: recipe.id, quantity: 2 },
+      { recipeId: secondRecipe.id, quantity: 1 }
+    ]);
+
+    expect(result.selectedRecipeCount).toBe(3);
+    expect(result.issues).toHaveLength(0);
+    expect(result.lines).toHaveLength(2);
+    expect(result.lines.find((line) => line.ingredientId === 'flour')?.amount).toBe(700);
+    expect(result.lines.find((line) => line.ingredientId === 'milk')?.amount).toBe(250);
+    expect(result.totalEstimatedCost).toBe(5);
   });
 
   it('ma spójny katalog startowy składników i przepisów', () => {

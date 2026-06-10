@@ -373,7 +373,7 @@ h3 {
 }
 
 .actionGrid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
 }
 
 .actionTile {
@@ -800,6 +800,201 @@ h3 {
   gap: 0.45rem;
   align-items: center;
   width: min(32rem, 100%);
+}
+
+.shoppingLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(22rem, 1.05fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.shoppingChooser,
+.shoppingResultPanel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.shoppingChooser {
+  border-color: rgba(37, 99, 235, 0.18);
+  background:
+    linear-gradient(135deg, rgba(239, 246, 255, 0.94), rgba(255, 255, 255, 0.74)),
+    #fff;
+}
+
+.shoppingResultPanel {
+  border-color: rgba(15, 118, 110, 0.2);
+  background:
+    linear-gradient(135deg, rgba(236, 253, 243, 0.96), rgba(255, 247, 230, 0.72)),
+    #fff;
+}
+
+.shoppingRecipeList,
+.shoppingList {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.shoppingRecipe,
+.shoppingListLine {
+  border: 1px solid rgba(223, 229, 226, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.shoppingRecipe {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, auto);
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.72rem;
+}
+
+.shoppingRecipe.selected {
+  border-color: rgba(15, 118, 110, 0.22);
+  background: rgba(236, 253, 243, 0.86);
+}
+
+.shoppingRecipeToggle {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.62rem;
+  align-items: center;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+}
+
+.shoppingCheck {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(15, 118, 110, 0.28);
+  border-radius: 8px;
+  color: #fff;
+  background: #fff;
+}
+
+.shoppingRecipe.selected .shoppingCheck {
+  background: var(--earning);
+}
+
+.shoppingRecipeText {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.shoppingRecipeText strong,
+.shoppingRecipeText small {
+  overflow-wrap: anywhere;
+}
+
+.shoppingRecipeText small {
+  color: var(--muted);
+}
+
+.shoppingQuantity {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.shoppingQuantity span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.shoppingQuantity input {
+  width: 6rem;
+  min-height: 40px;
+  padding: 0.45rem 0.55rem;
+  text-align: center;
+}
+
+.shoppingSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.shoppingSummary div {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 82px;
+  align-content: center;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.shoppingSummary span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.shoppingSummary strong {
+  color: var(--earning-dark);
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.shoppingListLine {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.82rem;
+}
+
+.shoppingListLine div {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.shoppingListLine small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.shoppingListAmount {
+  justify-items: end;
+  text-align: right;
+}
+
+.shoppingListAmount strong {
+  color: var(--secondary-dark);
+  font-size: 1.14rem;
+}
+
+.shoppingListAmount span {
+  color: var(--cost-dark);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.shoppingEmpty {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  gap: 0.65rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.shoppingEmpty svg {
+  color: var(--secondary);
+}
+
+.shoppingEmpty strong {
+  color: var(--ink);
 }
 
 .quoteLayout {
@@ -1429,7 +1624,7 @@ h3 {
   left: 0;
   z-index: 30;
   display: none;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.1rem;
   border-top: 1px solid var(--line);
   padding: 0.35rem max(0.35rem, env(safe-area-inset-left)) max(0.35rem, env(safe-area-inset-bottom));
@@ -1473,6 +1668,10 @@ h3 {
   }
 
   .quoteLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .shoppingLayout {
     grid-template-columns: 1fr;
   }
 
@@ -1791,6 +1990,22 @@ h3 {
 
   .resultBreakdown {
     grid-template-columns: 1fr;
+  }
+
+  .shoppingRecipe,
+  .shoppingListLine,
+  .shoppingSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .shoppingQuantity input {
+    width: 100%;
+    text-align: left;
+  }
+
+  .shoppingListAmount {
+    justify-items: start;
+    text-align: left;
   }
 
   .resultValueTile.earning strong {

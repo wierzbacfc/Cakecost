@@ -6,6 +6,7 @@ import { IngredientsPage } from '../features/ingredients/IngredientsPage';
 import { NewQuotePage } from '../features/quote/NewQuotePage';
 import { RecipesPage } from '../features/recipes/RecipesPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
+import { ShoppingListPage } from '../features/shopping/ShoppingListPage';
 import type { Page } from '../lib/navigation';
 import {
   clearStoredData,
@@ -158,6 +159,14 @@ export function App() {
           onSave={saveRecipe}
           onDelete={deleteRecipe}
           onOpenIngredients={() => setActivePage('ingredients')}
+        />
+      ) : null}
+
+      {activePage === 'shopping' ? (
+        <ShoppingListPage
+          recipes={data.recipes}
+          ingredients={data.ingredients}
+          onOpenRecipes={() => navigate('recipes')}
         />
       ) : null}
 

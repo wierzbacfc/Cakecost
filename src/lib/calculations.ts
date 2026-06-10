@@ -36,6 +36,33 @@ export type RecipeIngredientsCost = {
   errors: RecipeIngredientCostError[];
 };
 
+export type ShoppingListSelection = {
+  recipeId: string;
+  quantity: number;
+};
+
+export type ShoppingListLine = {
+  ingredientId: string;
+  ingredient: Ingredient;
+  amount: number;
+  unit: BaseUnit;
+  estimatedCost: number;
+  recipeNames: string[];
+};
+
+export type ShoppingListIssue = {
+  recipeName: string;
+  ingredientName?: string;
+  message: string;
+};
+
+export type ShoppingListResult = {
+  lines: ShoppingListLine[];
+  issues: ShoppingListIssue[];
+  selectedRecipeCount: number;
+  totalEstimatedCost: number;
+};
+
 const unitBaseMap: Record<Unit, BaseUnit> = {
   g: 'g',
   kg: 'g',
@@ -134,6 +161,113 @@ export function calculateRecipeIngredientsCost(
     total: roundCurrency(lines.reduce((sum, line) => sum + line.cost, 0)),
     lines,
     errors
+  };
+}
+
+export function generateShoppingList(
+  recipes: Recipe[],
+  ingredients: Ingredient[],
+  selections: ShoppingListSelection[]
+): ShoppingListResult {
+  const recipeMap = new Map(recipes.map((recipe) => [recipe.id, recipe]));
+  const ingredientMap = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
+  const lineMap = new Map<string, ShoppingListLine>();
+  const issues: ShoppingListIssue[] = [];
+  let selectedRecipeCount = 0;
+
+  selections.forEach((selection) => {
+    const quantity = Number.isFinite(selection.quantity)
+      ? Math.max(0, Math.round(selection.quantity))
+      : 0;
+
+    if (quantity <= 0) {
+      return;
+    }
+
+    const recipe = recipeMap.get(selection.recipeId);
+
+    if (!recipe) {
+      issues.push({
+        recipeName: 'Nieznany przepis',
+        message: 'Nie znaleziono wybranego przepisu.'
+      });
+      return;
+    }
+
+    selectedRecipeCount += quantity;
+
+    recipe.ingredients.forEach((recipeIngredient) => {
+      const ingredient = ingredientMap.get(recipeIngredient.ingredientId);
+
+      if (!ingredient) {
+        issues.push({
+          recipeName: recipe.name,
+          message: 'Nie znaleziono składnika z przepisu w bazie składników.'
+        });
+        return;
+      }
+
+      if (recipeIngredient.amount <= 0) {
+        issues.push({
+          recipeName: recipe.name,
+          ingredientName: ingredient.name,
+          message: 'Ilość składnika musi być większa od 0.'
+        });
+        return;
+      }
+
+      const recipeAmount = convertAmountToBaseUnit(
+        recipeIngredient.amount * quantity,
+        recipeIngredient.unit
+      );
+      const ingredientBaseUnit = getBaseUnit(ingredient.unit);
+
+      if (recipeAmount.unit !== ingredientBaseUnit) {
+        issues.push({
+          recipeName: recipe.name,
+          ingredientName: ingredient.name,
+          message: `Nie można przeliczyć ${recipeIngredient.unit} na ${ingredientBaseUnit}.`
+        });
+        return;
+      }
+
+      const existingLine = lineMap.get(ingredient.id);
+      const recipeLabel = quantity > 1 ? `${recipe.name} x${quantity}` : recipe.name;
+
+      if (existingLine) {
+        existingLine.amount += recipeAmount.amount;
+        existingLine.estimatedCost += recipeAmount.amount * ingredient.unitPrice;
+
+        if (!existingLine.recipeNames.includes(recipeLabel)) {
+          existingLine.recipeNames.push(recipeLabel);
+        }
+        return;
+      }
+
+      lineMap.set(ingredient.id, {
+        ingredientId: ingredient.id,
+        ingredient,
+        amount: recipeAmount.amount,
+        unit: recipeAmount.unit,
+        estimatedCost: recipeAmount.amount * ingredient.unitPrice,
+        recipeNames: [recipeLabel]
+      });
+    });
+  });
+
+  const lines = [...lineMap.values()]
+    .map((line) => ({
+      ...line,
+      amount: roundAmount(line.amount),
+      estimatedCost: roundCurrency(line.estimatedCost)
+    }))
+    .sort((a, b) => a.ingredient.name.localeCompare(b.ingredient.name, 'pl'));
+
+  return {
+    lines,
+    issues,
+    selectedRecipeCount,
+    totalEstimatedCost: roundCurrency(lines.reduce((sum, line) => sum + line.estimatedCost, 0))
   };
 }
 
@@ -273,4 +407,8 @@ function assertNonNegative(value: number, label: string) {
   if (!Number.isFinite(value) || value < 0) {
     throw new Error(`${label} nie może być ujemny.`);
   }
+}
+
+function roundAmount(value: number) {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
 }

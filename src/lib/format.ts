@@ -1,4 +1,4 @@
-import type { Unit } from './types';
+import type { BaseUnit, Unit } from './types';
 
 const moneyFormatter = new Intl.NumberFormat('pl-PL', {
   style: 'currency',
@@ -46,6 +46,22 @@ export function formatDate(value: string) {
 
 export function formatAmount(amount: number, unit: Unit) {
   return `${formatDecimal(amount)} ${unit}`;
+}
+
+export function formatShoppingAmount(amount: number, unit: BaseUnit) {
+  if (unit === 'g' && amount >= 1000) {
+    return `${formatDecimal(amount / 1000, 2)} kg`;
+  }
+
+  if (unit === 'ml' && amount >= 1000) {
+    return `${formatDecimal(amount / 1000, 2)} l`;
+  }
+
+  if (unit === 'szt') {
+    return `${formatDecimal(amount, 2)} szt.`;
+  }
+
+  return `${formatDecimal(amount, 2)} ${unit}`;
 }
 
 function roundWholeZloty(value: number) {
