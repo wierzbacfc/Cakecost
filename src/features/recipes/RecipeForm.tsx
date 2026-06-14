@@ -13,6 +13,7 @@ import { recipeCategories, units } from '../../lib/types';
 
 type RecipeFormProps = {
   recipe?: Recipe;
+  isNewRecipe?: boolean;
   ingredients: Ingredient[];
   onSave: (recipe: Recipe) => void;
   onCancel: () => void;
@@ -43,7 +44,7 @@ const categoryLabels: Record<RecipeCategory, string> = {
   inne: 'Inne'
 };
 
-export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeFormProps) {
+export function RecipeForm({ recipe, isNewRecipe = false, ingredients, onSave, onCancel }: RecipeFormProps) {
   const initialPan: PanShape = recipe?.pan ?? inferPanFromText(recipe?.formSize) ?? { type: 'round', diameterCm: 24 };
   const [draft, setDraft] = useState<RecipeDraft>({
     name: recipe?.name ?? '',
@@ -76,6 +77,7 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
     () => new Map(ingredientCost.errors.map((error) => [error.index, error.message])),
     [ingredientCost.errors]
   );
+  const inferredFormPan = useMemo(() => inferPanFromText(draft.formSize), [draft.formSize]);
   const panScale = useMemo(() => calculatePanScale(draft.pan, targetPan), [draft.pan, targetPan]);
   const ingredientNamesById = useMemo(
     () => new Map(ingredients.map((ingredient) => [ingredient.id, ingredient.name])),
@@ -124,6 +126,15 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
       ingredientId,
       unit: ingredient ? getRecipeUnitForIngredient(ingredient) : 'g'
     });
+  }
+
+  function applyInferredFormPan() {
+    if (!inferredFormPan) {
+      return;
+    }
+
+    updateDraft('pan', inferredFormPan);
+    setTargetPan(inferredFormPan);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -196,8 +207,8 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
     <form className="panel formGrid" onSubmit={handleSubmit}>
       <div className="formHeader">
         <div>
-          <p className="eyebrow">{recipe ? 'Edycja' : 'Nowy przepis'}</p>
-          <h2 id="recipe-form-title">{recipe ? recipe.name : 'Przepis'}</h2>
+          <p className="eyebrow">{recipe && !isNewRecipe ? 'Edycja' : 'Nowy przepis'}</p>
+          <h2 id="recipe-form-title">{recipe?.name || 'Przepis'}</h2>
         </div>
         <button className="iconButton" type="button" title="Zamknij" onClick={onCancel}>
           <X size={19} />
@@ -239,14 +250,25 @@ export function RecipeForm({ recipe, ingredients, onSave, onCancel }: RecipeForm
       </label>
 
       <div className="threeColumn">
-        <label className="field">
+        <div className="field">
           <span className="fieldLabel">Forma</span>
           <input
             value={draft.formSize}
             placeholder="24 cm"
             onChange={(event) => updateDraft('formSize', event.target.value)}
           />
-        </label>
+          {inferredFormPan ? (
+            <button
+              className="button buttonGhost compactButton inlineFieldButton"
+              type="button"
+              onClick={applyInferredFormPan}
+            >
+              Użyj jako foremki bazowej
+            </button>
+          ) : (
+            <span className="sectionHint">Opis formy jest tekstem. Foremkę bazową ustawisz niżej.</span>
+          )}
+        </div>
         <NumberInput
           label="Porcje / sztuki"
           value={draft.servings}

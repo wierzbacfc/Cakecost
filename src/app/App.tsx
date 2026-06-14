@@ -7,6 +7,7 @@ import { NewQuotePage } from '../features/quote/NewQuotePage';
 import { RecipesPage } from '../features/recipes/RecipesPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { ShoppingListPage } from '../features/shopping/ShoppingListPage';
+import { clearAiSettings, loadAiSettings, saveAiSettings } from '../lib/aiSettings';
 import type { Page } from '../lib/navigation';
 import { applyServiceWorkerUpdate } from '../registerServiceWorker';
 import {
@@ -16,6 +17,7 @@ import {
   saveAppData
 } from '../lib/storage';
 import type {
+  AiSettings,
   AppData,
   AppSettings,
   Ingredient,
@@ -26,6 +28,7 @@ import type {
 
 export function App() {
   const [data, setData] = useState<AppData>(() => loadAppData());
+  const [aiSettings, setAiSettings] = useState<AiSettings>(() => loadAiSettings());
   const [activePage, setActivePage] = useState<Page>('home');
   const [editingHistoryItem, setEditingHistoryItem] = useState<QuoteHistoryItem | null>(null);
   const [toast, setToast] = useState('');
@@ -33,8 +36,14 @@ export function App() {
   const toastTimeout = useRef<number>();
 
   useEffect(() => {
-    saveAppData(data);
+    if (!saveAppData(data)) {
+      notify('Nie udało się zapisać danych lokalnie. Wyeksportuj kopię w ustawieniach.');
+    }
   }, [data]);
+
+  useEffect(() => {
+    saveAiSettings(aiSettings);
+  }, [aiSettings]);
 
   useEffect(() => {
     function handleUpdateAvailable() {
@@ -75,6 +84,15 @@ export function App() {
   }
 
   function deleteIngredient(ingredientId: string) {
+    const usedInRecipes = data.recipes.filter((recipe) =>
+      recipe.ingredients.some((ingredient) => ingredient.ingredientId === ingredientId)
+    );
+
+    if (usedInRecipes.length > 0) {
+      notify(`Nie można usunąć składnika używanego w ${usedInRecipes.length} przepisach.`);
+      return;
+    }
+
     setData((current) => ({
       ...current,
       ingredients: current.ingredients.filter((ingredient) => ingredient.id !== ingredientId)
@@ -96,6 +114,16 @@ export function App() {
   }
 
   function deleteRecipe(recipeId: string) {
+    const hasHistory = data.history.some((item) => item.recipeId === recipeId);
+    const hasShoppingList = data.shoppingLists.some((list) =>
+      list.selections.some((selection) => selection.recipeId === recipeId)
+    );
+
+    if (hasHistory || hasShoppingList) {
+      notify('Nie można usunąć przepisu używanego w historii wycen lub listach zakupów.');
+      return;
+    }
+
     setData((current) => ({
       ...current,
       recipes: current.recipes.filter((recipe) => recipe.id !== recipeId)
@@ -136,14 +164,16 @@ export function App() {
     setActivePage('quote');
   }
 
-  function saveShoppingList(list: SavedShoppingList) {
+  function saveShoppingList(list: SavedShoppingList, options: { silent?: boolean } = {}) {
     setData((current) => ({
       ...current,
       shoppingLists: current.shoppingLists.some((item) => item.id === list.id)
         ? current.shoppingLists.map((item) => (item.id === list.id ? list : item))
         : [list, ...current.shoppingLists]
     }));
-    notify('Lista zakupów zapisana.');
+    if (!options.silent) {
+      notify('Lista zakupów zapisana.');
+    }
   }
 
   function deleteShoppingList(listId: string) {
@@ -161,6 +191,10 @@ export function App() {
     }));
   }
 
+  function updateAiSettings(settings: AiSettings) {
+    setAiSettings(settings);
+  }
+
   function importData(nextData: AppData) {
     setData(nextData);
     notify('Dane zaimportowane.');
@@ -168,7 +202,9 @@ export function App() {
 
   function clearAllData() {
     clearStoredData();
+    clearAiSettings();
     setData(createEmptyData());
+    setAiSettings(loadAiSettings());
     notify('Dane wyczyszczone.');
   }
 
@@ -180,6 +216,7 @@ export function App() {
           ingredientCount={data.ingredients.length}
           recipeCount={data.recipes.length}
           historyCount={data.history.length}
+          shoppingListCount={data.shoppingLists.length}
           onNavigate={navigate}
         />
       ) : null}
@@ -196,9 +233,11 @@ export function App() {
         <RecipesPage
           recipes={data.recipes}
           ingredients={data.ingredients}
+          aiSettings={aiSettings}
           onSave={saveRecipe}
           onDelete={deleteRecipe}
           onOpenIngredients={() => setActivePage('ingredients')}
+          onOpenSettings={() => setActivePage('settings')}
         />
       ) : null}
 
@@ -237,7 +276,9 @@ export function App() {
         <SettingsPage
           data={data}
           settings={data.settings}
+          aiSettings={aiSettings}
           onUpdateSettings={updateSettings}
+          onUpdateAiSettings={updateAiSettings}
           onImportData={importData}
           onClearAll={clearAllData}
         />

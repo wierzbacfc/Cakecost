@@ -12,7 +12,7 @@ type ShoppingListPageProps = {
   recipes: Recipe[];
   ingredients: Ingredient[];
   savedLists: SavedShoppingList[];
-  onSaveList: (list: SavedShoppingList) => void;
+  onSaveList: (list: SavedShoppingList, options?: { silent?: boolean }) => void;
   onDeleteList: (listId: string) => void;
   onOpenRecipes: () => void;
 };
@@ -32,6 +32,8 @@ export function ShoppingListPage({
   const [listName, setListName] = useState('');
   const [activeSavedListId, setActiveSavedListId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedShoppingList | null>(null);
+  const [checkedProductIds, setCheckedProductIds] = useState<Set<string>>(() => new Set());
+  const [hidePurchased, setHidePurchased] = useState(false);
 
   const sortedRecipes = useMemo(
     () => [...recipes].sort((a, b) => a.name.localeCompare(b.name, 'pl')),
@@ -71,6 +73,15 @@ export function ShoppingListPage({
   const activeSavedList = activeSavedListId
     ? savedLists.find((list) => list.id === activeSavedListId)
     : undefined;
+  const purchasedCount = shoppingList.lines.filter((line) => checkedProductIds.has(line.ingredientId)).length;
+  const visibleShoppingLines = hidePurchased
+    ? shoppingList.lines.filter((line) => !checkedProductIds.has(line.ingredientId))
+    : shoppingList.lines;
+  const visibleSavedLines = activeSavedList
+    ? hidePurchased
+      ? activeSavedList.lines.filter((line) => !checkedProductIds.has(line.ingredientId))
+      : activeSavedList.lines
+    : [];
 
   function toggleRecipe(recipeId: string) {
     setRecipeQuantities((current) => {
@@ -108,12 +119,16 @@ export function ShoppingListPage({
   function clearSelection() {
     setRecipeQuantities({});
     setActiveSavedListId(null);
+    setCheckedProductIds(new Set());
+    setHidePurchased(false);
   }
 
   function startNewList() {
     setRecipeQuantities({});
     setListName('');
     setActiveSavedListId(null);
+    setCheckedProductIds(new Set());
+    setHidePurchased(false);
     setSearch('');
   }
 
@@ -154,7 +169,8 @@ export function ShoppingListPage({
         amount: line.amount,
         unit: line.unit,
         estimatedCost: line.estimatedCost,
-        recipeNames: line.recipeNames
+        recipeNames: line.recipeNames,
+        purchased: checkedProductIds.has(line.ingredientId)
       })),
       totalEstimatedCost: shoppingList.totalEstimatedCost
     };
@@ -173,7 +189,54 @@ export function ShoppingListPage({
     );
     setListName(list.name);
     setActiveSavedListId(list.id);
+    setCheckedProductIds(
+      new Set(list.lines.filter((line) => line.purchased === true).map((line) => line.ingredientId))
+    );
+    setHidePurchased(false);
     setSearch('');
+  }
+
+  function toggleProductChecked(ingredientId: string) {
+    setCheckedProductIds((current) => {
+      const next = new Set(current);
+      const checked = !next.has(ingredientId);
+
+      if (checked) {
+        next.add(ingredientId);
+      } else {
+        next.delete(ingredientId);
+      }
+
+      if (activeSavedList) {
+        onSaveList(
+          {
+            ...activeSavedList,
+            updatedAt: new Date().toISOString(),
+            lines: activeSavedList.lines.map((line) =>
+              line.ingredientId === ingredientId ? { ...line, purchased: checked } : line
+            )
+          },
+          { silent: true }
+        );
+      }
+
+      return next;
+    });
+  }
+
+  function clearPurchasedProducts() {
+    setCheckedProductIds(new Set());
+
+    if (activeSavedList) {
+      onSaveList(
+        {
+          ...activeSavedList,
+          updatedAt: new Date().toISOString(),
+          lines: activeSavedList.lines.map((line) => ({ ...line, purchased: false }))
+        },
+        { silent: true }
+      );
+    }
   }
 
   if (recipes.length === 0) {
@@ -418,6 +481,10 @@ export function ShoppingListPage({
                   <strong>{shoppingList.lines.length}</strong>
                 </div>
                 <div>
+                  <span>Kupione</span>
+                  <strong>{purchasedCount}</strong>
+                </div>
+                <div>
                   <span>Szacowany koszt</span>
                   <strong>
                     <Money value={shoppingList.totalEstimatedCost} />
@@ -425,22 +492,61 @@ export function ShoppingListPage({
                 </div>
               </div>
 
-              <div className="shoppingList">
-                {shoppingList.lines.map((line) => (
-                  <article key={line.ingredientId} className="shoppingListLine">
-                    <div>
-                      <strong>{line.ingredient.name}</strong>
-                      <small>{line.recipeNames.join(', ')}</small>
-                    </div>
-                    <div className="shoppingListAmount">
-                      <strong>{formatShoppingAmount(line.amount, line.unit)}</strong>
-                      <span>
-                        ok. <Money value={line.estimatedCost} />
-                      </span>
-                    </div>
-                  </article>
-                ))}
+              <div className="shoppingListTools">
+                <button
+                  className="button buttonGhost compactButton"
+                  type="button"
+                  disabled={purchasedCount === 0}
+                  onClick={() => setHidePurchased((current) => !current)}
+                >
+                  {hidePurchased ? 'Pokaż kupione' : 'Ukryj kupione'}
+                </button>
+                <button
+                  className="button buttonGhost compactButton"
+                  type="button"
+                  disabled={purchasedCount === 0}
+                  onClick={clearPurchasedProducts}
+                >
+                  Wyczyść odhaczenia
+                </button>
               </div>
+
+              <div className="shoppingList">
+                {visibleShoppingLines.map((line) => {
+                  const isPurchased = checkedProductIds.has(line.ingredientId);
+
+                  return (
+                    <label
+                      key={line.ingredientId}
+                      className={isPurchased ? 'shoppingListLine purchased' : 'shoppingListLine'}
+                    >
+                      <input
+                        className="shoppingLineCheckbox"
+                        type="checkbox"
+                        checked={isPurchased}
+                        onChange={() => toggleProductChecked(line.ingredientId)}
+                      />
+                      <div>
+                        <strong>{line.ingredient.name}</strong>
+                        <small>{line.recipeNames.join(', ')}</small>
+                      </div>
+                      <div className="shoppingListAmount">
+                        <strong>{formatShoppingAmount(line.amount, line.unit)}</strong>
+                        <span>
+                          ok. <Money value={line.estimatedCost} />
+                        </span>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {hidePurchased && visibleShoppingLines.length === 0 ? (
+                <div className="shoppingEmpty compact">
+                  <ShoppingBasket size={28} />
+                  <strong>Wszystkie produkty są odhaczone.</strong>
+                </div>
+              ) : null}
 
               {shoppingList.issues.length > 0 ? (
                 <div className="warning warningDanger">
@@ -471,8 +577,21 @@ export function ShoppingListPage({
             </div>
           </div>
           <div className="shoppingList">
-            {activeSavedList.lines.map((line) => (
-              <article key={line.ingredientId} className="shoppingListLine">
+            {visibleSavedLines.map((line) => (
+              <label
+                key={line.ingredientId}
+                className={
+                  checkedProductIds.has(line.ingredientId)
+                    ? 'shoppingListLine purchased'
+                    : 'shoppingListLine'
+                }
+              >
+                <input
+                  className="shoppingLineCheckbox"
+                  type="checkbox"
+                  checked={checkedProductIds.has(line.ingredientId)}
+                  onChange={() => toggleProductChecked(line.ingredientId)}
+                />
                 <div>
                   <strong>{line.ingredientName}</strong>
                   <small>{line.recipeNames.join(', ')}</small>
@@ -483,9 +602,15 @@ export function ShoppingListPage({
                     ok. <Money value={line.estimatedCost} />
                   </span>
                 </div>
-              </article>
+              </label>
             ))}
           </div>
+          {hidePurchased && visibleSavedLines.length === 0 ? (
+            <div className="shoppingEmpty compact">
+              <ShoppingBasket size={28} />
+              <strong>Wszystkie produkty z tej listy są odhaczone.</strong>
+            </div>
+          ) : null}
         </section>
       ) : null}
 

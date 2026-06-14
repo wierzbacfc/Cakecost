@@ -122,6 +122,7 @@ export type SavedShoppingListLine = {
   unit: BaseUnit;
   estimatedCost: number;
   recipeNames: string[];
+  purchased?: boolean;
 };
 
 export type SavedShoppingList = {
@@ -144,6 +145,11 @@ export type AppSettings = {
   defaultEnergyActivityHourlyCost: number;
   defaultDeliveryCost: number;
   defaultRoundTo: RoundTo;
+};
+
+export type AiSettings = {
+  geminiApiKey: string;
+  geminiModel: string;
 };
 
 export type AppData = {

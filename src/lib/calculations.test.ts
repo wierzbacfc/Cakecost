@@ -6,7 +6,8 @@ import {
   generateShoppingList,
   roundPrice
 } from './calculations';
-import { createSampleData } from './sampleData';
+import { createSampleData, mergeSampleCatalog } from './sampleData';
+import { normalizeAppData } from './storage';
 import type { Ingredient, Recipe } from './types';
 
 const flour: Ingredient = {
@@ -152,11 +153,12 @@ describe('calculations', () => {
     const data = createSampleData('2026-01-01T00:00:00.000Z');
 
     expect(data.ingredients.length).toBeGreaterThanOrEqual(30);
-    expect(data.recipes).toHaveLength(13);
+    expect(data.recipes).toHaveLength(14);
     expect(data.recipes.map((sampleRecipe) => sampleRecipe.name)).toEqual([
       'Sernik nowojorski (przepis II)',
       'Sernik z mango',
       'Sernik z lemon curd',
+      'Cheesecake sticks, czyli serniczki na patyku',
       'Domowa szarlotka z budyniem',
       'Szarlotka z jabłek prażonych',
       'Szarlotka spod samiuśkich Tater',
@@ -174,5 +176,58 @@ describe('calculations', () => {
       expect(cost.errors, sampleRecipe.name).toHaveLength(0);
       expect(cost.total, sampleRecipe.name).toBeGreaterThan(0);
     });
+  });
+
+  it('nie nadpisuje lokalnie edytowanych przepisów przy aktualizacji katalogu', () => {
+    const data = createSampleData('2026-01-01T00:00:00.000Z');
+    const editedRecipe = {
+      ...data.recipes[0],
+      name: 'Mój własny sernik',
+      servings: 99,
+      updatedAt: '2026-02-01T00:00:00.000Z'
+    };
+
+    const merged = mergeSampleCatalog(
+      {
+        ...data,
+        recipes: [editedRecipe, ...data.recipes.slice(1)]
+      },
+      '2026-03-01T00:00:00.000Z',
+      { replaceRecipes: true }
+    );
+
+    expect(merged.recipes.find((item) => item.id === editedRecipe.id)?.name).toBe('Mój własny sernik');
+    expect(merged.recipes.find((item) => item.id === data.recipes[1].id)?.updatedAt).toBe(
+      '2026-03-01T00:00:00.000Z'
+    );
+  });
+
+  it('zachowuje odhaczone produkty w zapisanych listach zakupów po normalizacji danych', () => {
+    const normalized = normalizeAppData({
+      shoppingLists: [
+        {
+          id: 'shopping-list',
+          name: 'Zakupy na weekend',
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-02T00:00:00.000Z',
+          selections: [{ recipeId: 'recipe', recipeName: 'Testowe ciasto', quantity: 2 }],
+          lines: [
+            {
+              ingredientId: 'flour',
+              ingredientName: 'Mąka pszenna',
+              amount: 500,
+              unit: 'g',
+              estimatedCost: 3,
+              recipeNames: ['Testowe ciasto'],
+              purchased: true
+            }
+          ],
+          totalEstimatedCost: 3
+        }
+      ]
+    });
+
+    expect(normalized.shoppingLists).toHaveLength(1);
+    expect(normalized.shoppingLists[0].lines[0].purchased).toBe(true);
   });
 });

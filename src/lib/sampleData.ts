@@ -2,7 +2,7 @@ import { calculateIngredientUnitPrice } from './calculations';
 import { inferPanFromText } from './pans';
 import type { AppData, AppSettings, Ingredient, Recipe, Unit } from './types';
 
-export const recipeSeedVersion = 'moje-wypieki-links-2026-06-10-ciastka-owsiane';
+export const recipeSeedVersion = 'catalog-2026-06-13-cheesecake-sticks';
 
 export const defaultSettings: AppSettings = {
   defaultHourlyRate: 40,
@@ -25,6 +25,8 @@ const ingredientIds = {
   mascarpone: 'sample-mascarpone',
   cream: 'sample-cream',
   chocolate: 'sample-chocolate',
+  whiteChocolate: 'sample-white-chocolate',
+  milkChocolate: 'sample-milk-chocolate',
   curd: 'sample-curd',
   cocoa: 'sample-cocoa',
   bakingPowder: 'sample-baking-powder',
@@ -108,10 +110,21 @@ export function mergeSampleCatalog(
   const catalog = createSampleCatalog(now);
   const existingIngredientIds = new Set(data.ingredients.map((ingredient) => ingredient.id));
   const existingRecipeIds = new Set(data.recipes.map((recipe) => recipe.id));
-  const catalogRecipes = options.replaceRecipes
-    ? data.recipes.filter((recipe) => !recipe.id.startsWith('mojewypieki-'))
+  const seedRecipeIds = new Set(catalog.recipes.map((recipe) => recipe.id));
+  const preservedRecipes = options.replaceRecipes
+    ? data.recipes.filter((recipe) => {
+        if (!isSeedRecipe(recipe)) {
+          return true;
+        }
+
+        if (!seedRecipeIds.has(recipe.id)) {
+          return true;
+        }
+
+        return isLocallyEditedSeedRecipe(recipe);
+      })
     : data.recipes;
-  const catalogRecipeIds = new Set(catalogRecipes.map((recipe) => recipe.id));
+  const preservedRecipeIds = new Set(preservedRecipes.map((recipe) => recipe.id));
 
   return {
     ...data,
@@ -120,12 +133,20 @@ export function mergeSampleCatalog(
       ...catalog.ingredients.filter((ingredient) => !existingIngredientIds.has(ingredient.id))
     ],
     recipes: [
-      ...catalogRecipes,
+      ...preservedRecipes,
       ...catalog.recipes.filter((recipe) =>
-        options.replaceRecipes ? !catalogRecipeIds.has(recipe.id) : !existingRecipeIds.has(recipe.id)
+        options.replaceRecipes ? !preservedRecipeIds.has(recipe.id) : !existingRecipeIds.has(recipe.id)
       )
     ]
   };
+}
+
+function isSeedRecipe(recipe: Pick<Recipe, 'id'>) {
+  return recipe.id.startsWith('mojewypieki-') || recipe.id.startsWith('blogzapetytem-');
+}
+
+function isLocallyEditedSeedRecipe(recipe: Pick<Recipe, 'createdAt' | 'updatedAt'>) {
+  return Boolean(recipe.createdAt && recipe.updatedAt && recipe.createdAt !== recipe.updatedAt);
 }
 
 function createSampleCatalog(now: string): Pick<AppData, 'ingredients' | 'recipes'> {
@@ -145,6 +166,8 @@ function createSampleIngredients(now: string): Ingredient[] {
     createIngredient(ingredientIds.mascarpone, 'Mascarpone', 14, 250, 'g', now),
     createIngredient(ingredientIds.cream, 'Śmietanka 30%', 8, 500, 'ml', now),
     createIngredient(ingredientIds.chocolate, 'Czekolada gorzka', 6, 100, 'g', now),
+    createIngredient(ingredientIds.whiteChocolate, 'Czekolada biała', 7, 100, 'g', now),
+    createIngredient(ingredientIds.milkChocolate, 'Czekolada mleczna', 6, 100, 'g', now),
     createIngredient(ingredientIds.curd, 'Twaróg sernikowy', 17, 1, 'kg', now),
     createIngredient(ingredientIds.cocoa, 'Kakao', 7, 100, 'g', now),
     createIngredient(ingredientIds.bakingPowder, 'Proszek do pieczenia', 2, 30, 'g', now),
@@ -315,6 +338,41 @@ function createMojeWypiekiRecipes(now: string): Recipe[] {
         'Masa serowa: 750 g twarogu półtłustego lub tłustego, zmielonego trzykrotnie; 250 ml śmietanki kremówki 36% lub 30%; 150 g drobnego cukru; 2 łyżeczki otartej skórki z cytryny; 3 jajka.',
         'Lemon curd: 45 g masła; 110 g drobnego cukru; 1 jajko; 1 łyżeczka otartej skórki z cytryny; 2 łyżki soku z cytryny.',
         'Czasy ze źródła: chłodzenie spodu 30 min, pieczenie sernika ok. 60-70 min w 160°C w kąpieli wodnej, chłodzenie w lodówce najlepiej przez noc.'
+      ]
+    ),
+    createRecipe(
+      now,
+      'blogzapetytem-cheesecake-sticks-serniczki-na-patyku',
+      'Cheesecake sticks, czyli serniczki na patyku',
+      '2 tortownice 22 cm',
+      24,
+      3000,
+      90,
+      70,
+      60,
+      25,
+      [
+        { ingredientId: ingredientIds.flour, amount: 150, unit: 'g' },
+        { ingredientId: ingredientIds.powderedSugar, amount: 30, unit: 'g' },
+        { ingredientId: ingredientIds.eggs, amount: 9, unit: 'szt' },
+        { ingredientId: ingredientIds.bakingPowder, amount: 2.5, unit: 'g' },
+        { ingredientId: ingredientIds.butter, amount: 50, unit: 'g' },
+        { ingredientId: ingredientIds.curd, amount: 1000, unit: 'g' },
+        { ingredientId: ingredientIds.pudding, amount: 80, unit: 'g' },
+        { ingredientId: ingredientIds.sugar, amount: 330, unit: 'g' },
+        { ingredientId: ingredientIds.vanillaSugar, amount: 16, unit: 'g' },
+        { ingredientId: ingredientIds.cream36, amount: 300, unit: 'ml' },
+        { ingredientId: ingredientIds.whiteChocolate, amount: 200, unit: 'g' },
+        { ingredientId: ingredientIds.milkChocolate, amount: 200, unit: 'g' },
+        { ingredientId: ingredientIds.chocolate, amount: 200, unit: 'g' }
+      ],
+      [
+        'Źródło: Blog z apetytem, https://blogzapetytem.pl/2023/05/31/cheescakesticks-czyli-serniczki-na-patyku/',
+        'Porcja ze źródła: dwa serniki w tortownicach 22 cm, razem 24 serniczki na patyku.',
+        'Spód: 150 g mąki pszennej; 30 g cukru pudru; 1 jajko; pół łyżeczki proszku do pieczenia; 50 g masła.',
+        'Masa serowa: 1 kg sera mielonego; 2 budynie śmietankowe lub waniliowe po 40 g; 8 jajek; 1,5 szklanki drobnego cukru; 1 cukier waniliowy; 300 ml śmietanki kremówki 30% lub 36%.',
+        'Polewa: 200 g białej czekolady; 200 g mlecznej czekolady; 200 g gorzkiej czekolady.',
+        'Czasy ze źródła: pieczenie 70 min w 160°C, chłodzenie kilka godzin w lodówce, mrożenie ok. 5 h przed oblewaniem czekoladą. Czasy aktywnej pracy w aplikacji są oszacowane.'
       ]
     ),
     createRecipe(

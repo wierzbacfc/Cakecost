@@ -38,7 +38,7 @@ export function loadAppData(): AppData {
   if (!raw) {
     const sampleData = createSampleData();
     saveAppData(sampleData);
-    localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
+    saveRecipeSeedVersion();
     return sampleData;
   }
 
@@ -50,7 +50,7 @@ export function loadAppData(): AppData {
 
     if (shouldReplaceRecipes) {
       saveAppData(data);
-      localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
+      saveRecipeSeedVersion();
     }
 
     return data;
@@ -58,17 +58,23 @@ export function loadAppData(): AppData {
     console.warn('Nie udało się odczytać danych aplikacji.', error);
     const sampleData = createSampleData();
     saveAppData(sampleData);
-    localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
+    saveRecipeSeedVersion();
     return sampleData;
   }
 }
 
-export function saveAppData(data: AppData) {
+export function saveAppData(data: AppData): boolean {
   if (typeof localStorage === 'undefined') {
-    return;
+    return true;
   }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    console.warn('Nie udało się zapisać danych aplikacji.', error);
+    return false;
+  }
 }
 
 export function exportAppData(data: AppData): AppDataExport {
@@ -93,6 +99,14 @@ export function clearStoredData() {
   if (typeof localStorage !== 'undefined') {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(RECIPE_SEED_VERSION_KEY);
+  }
+}
+
+function saveRecipeSeedVersion() {
+  try {
+    localStorage.setItem(RECIPE_SEED_VERSION_KEY, recipeSeedVersion);
+  } catch (error) {
+    console.warn('Nie udało się zapisać wersji katalogu przepisów.', error);
   }
 }
 
@@ -355,7 +369,8 @@ function normalizeShoppingLine(
     estimatedCost: roundCurrency(nonNegativeNumber(value.estimatedCost, 0)),
     recipeNames: Array.isArray(value.recipeNames)
       ? value.recipeNames.filter((name): name is string => typeof name === 'string' && name.trim() !== '')
-      : []
+      : [],
+    purchased: value.purchased === true
   };
 }
 

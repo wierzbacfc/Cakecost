@@ -337,7 +337,7 @@ h3 {
 }
 
 .statsGrid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
 
 .statTile,
@@ -529,6 +529,10 @@ h3 {
   min-height: 38px;
   padding: 0.48rem 0.72rem;
   white-space: nowrap;
+}
+
+.inlineFieldButton {
+  justify-self: start;
 }
 
 .collapseHeader {
@@ -756,6 +760,74 @@ h3 {
 .settingsData > .buttonRow {
   border-color: rgba(15, 118, 110, 0.16);
   background: rgba(255, 255, 255, 0.92);
+}
+
+.pageHeaderActions {
+  margin-left: auto;
+}
+
+.settingsAi {
+  border-color: rgba(37, 99, 235, 0.18);
+  background:
+    linear-gradient(135deg, rgba(239, 246, 255, 0.95), rgba(234, 250, 246, 0.78) 55%, rgba(255, 255, 255, 0)),
+    #fff;
+}
+
+.settingsAi > .formHeader,
+.settingsAi > .aiSettingsBox,
+.settingsAi > .buttonRow {
+  margin-top: 0.9rem;
+}
+
+.settingsAi > :first-child {
+  margin-top: 0;
+}
+
+.settingsAi > .formHeader {
+  border-bottom: 1px solid rgba(37, 99, 235, 0.16);
+  padding-bottom: 0.75rem;
+}
+
+.aiSettingsBox {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, auto);
+  gap: 0.75rem;
+  align-items: end;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 8px;
+  padding: 0.95rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.secretInputRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.aiModelInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  color: var(--secondary-dark);
+  background: var(--teal-bg);
+}
+
+.aiModelInfo span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.aiModelInfo strong {
+  display: block;
+  overflow-wrap: anywhere;
 }
 
 .itemActions {
@@ -1006,8 +1078,15 @@ h3 {
 
 .shoppingSummary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
   gap: 0.65rem;
+}
+
+.shoppingListTools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
 }
 
 .shoppingSummary div {
@@ -1035,10 +1114,11 @@ h3 {
 
 .shoppingListLine {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.8rem;
   align-items: center;
   padding: 0.82rem;
+  cursor: pointer;
 }
 
 .shoppingListLine div {
@@ -1050,6 +1130,25 @@ h3 {
 .shoppingListLine small {
   color: var(--muted);
   overflow-wrap: anywhere;
+}
+
+.shoppingListLine.purchased {
+  border-color: rgba(21, 128, 61, 0.16);
+  background: rgba(236, 253, 243, 0.7);
+}
+
+.shoppingListLine.purchased > div:not(.shoppingListAmount) strong,
+.shoppingListLine.purchased > div:not(.shoppingListAmount) small {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.shoppingLineCheckbox {
+  width: 1.35rem;
+  height: 1.35rem;
+  min-height: 0;
+  accent-color: var(--earning);
+  cursor: pointer;
 }
 
 .shoppingListAmount {
@@ -1699,6 +1798,89 @@ h3 {
   gap: 0.55rem;
 }
 
+.aiImportDialog {
+  width: min(820px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.aiImportDialog .formHeader {
+  align-items: center;
+}
+
+.aiImportSource,
+.aiReview {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 8px;
+  padding: 0.9rem;
+  background: rgba(239, 246, 255, 0.68);
+}
+
+.aiImportMode button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.aiReview {
+  border-color: rgba(15, 118, 110, 0.18);
+  background: rgba(234, 250, 246, 0.7);
+}
+
+.aiReviewSummary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.aiReviewSummary div {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 68px;
+  align-content: center;
+  border: 1px solid rgba(223, 229, 226, 0.85);
+  border-radius: 8px;
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.aiReviewSummary span,
+.aiIngredientName span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.aiReviewSummary strong,
+.aiIngredientName strong {
+  overflow-wrap: anywhere;
+}
+
+.aiIngredientReview {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.aiIngredientReviewRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.85fr);
+  gap: 0.7rem;
+  align-items: end;
+  border: 1px solid rgba(223, 229, 226, 0.9);
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fff;
+}
+
+.aiIngredientName {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
 .toast {
   position: fixed;
   right: 1rem;
@@ -1856,6 +2038,17 @@ h3 {
   .buttonRow .button,
   .formActions .button {
     width: 100%;
+  }
+
+  .pageHeaderActions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .aiSettingsBox,
+  .aiReviewSummary,
+  .aiIngredientReviewRow {
+    grid-template-columns: 1fr;
   }
 
   .dialogActions {
@@ -2019,7 +2212,7 @@ h3 {
   }
 
   .statsGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.55rem;
   }
 
@@ -2129,10 +2322,14 @@ h3 {
   }
 
   .shoppingRecipe,
-  .shoppingListLine,
   .shoppingSummary,
   .shoppingSaveBar {
     grid-template-columns: 1fr;
+  }
+
+  .shoppingListLine {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
   }
 
   .savedShoppingCard {
@@ -2150,6 +2347,7 @@ h3 {
   }
 
   .shoppingListAmount {
+    grid-column: 2;
     justify-items: start;
     text-align: left;
   }

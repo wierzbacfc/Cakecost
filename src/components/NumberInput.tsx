@@ -76,6 +76,11 @@ export function NumberInput({
     setDraft(toInputValue(normalized));
   }
 
+  function handleFocus(event: FocusEvent<HTMLInputElement>) {
+    inputProps.onFocus?.(event);
+    event.currentTarget.select();
+  }
+
   return (
     <label className="field" htmlFor={inputId}>
       <span className="fieldLabel">{label}</span>
@@ -92,6 +97,7 @@ export function NumberInput({
           step={step}
           aria-invalid={Boolean(error)}
           onChange={handleChange}
+          onFocus={handleFocus}
           onBlur={handleBlur}
         />
         {suffix ? <span className="inputSuffix">{suffix}</span> : null}

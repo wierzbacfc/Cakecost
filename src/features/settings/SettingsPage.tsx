@@ -1,14 +1,16 @@
-import { Download, RotateCcw, Upload } from 'lucide-react';
-import { type ChangeEvent, useRef, useState } from 'react';
+import { Download, Eye, EyeOff, KeyRound, RotateCcw, Save, Trash2, Upload } from 'lucide-react';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { NumberInput } from '../../components/NumberInput';
 import { exportAppData, importAppData } from '../../lib/storage';
-import type { AppData, AppSettings, ProfitMode, RoundTo } from '../../lib/types';
+import type { AiSettings, AppData, AppSettings, ProfitMode, RoundTo } from '../../lib/types';
 
 type SettingsPageProps = {
   data: AppData;
   settings: AppSettings;
+  aiSettings: AiSettings;
   onUpdateSettings: (settings: AppSettings) => void;
+  onUpdateAiSettings: (settings: AiSettings) => void;
   onImportData: (data: AppData) => void;
   onClearAll: () => void;
 };
@@ -16,14 +18,22 @@ type SettingsPageProps = {
 export function SettingsPage({
   data,
   settings,
+  aiSettings,
   onUpdateSettings,
+  onUpdateAiSettings,
   onImportData,
   onClearAll
 }: SettingsPageProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [apiKeyDraft, setApiKeyDraft] = useState(aiSettings.geminiApiKey);
+  const [isApiKeyVisible, setIsApiKeyVisible] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
+
+  useEffect(() => {
+    setApiKeyDraft(aiSettings.geminiApiKey);
+  }, [aiSettings.geminiApiKey]);
 
   function updateSettings<Value extends keyof AppSettings>(
     field: Value,
@@ -44,6 +54,26 @@ export function SettingsPage({
     link.click();
     URL.revokeObjectURL(url);
     setMessage('Dane wyeksportowane.');
+    setError('');
+  }
+
+  function saveGeminiApiKey() {
+    const nextApiKey = apiKeyDraft.trim();
+    onUpdateAiSettings({
+      ...aiSettings,
+      geminiApiKey: nextApiKey
+    });
+    setMessage(nextApiKey ? 'Klucz API Gemini zapisany.' : 'Klucz API Gemini usunięty.');
+    setError('');
+  }
+
+  function clearGeminiApiKey() {
+    setApiKeyDraft('');
+    onUpdateAiSettings({
+      ...aiSettings,
+      geminiApiKey: ''
+    });
+    setMessage('Klucz API Gemini usunięty.');
     setError('');
   }
 
@@ -150,11 +180,69 @@ export function SettingsPage({
         </label>
       </section>
 
+      <section className="panel formGrid settingsPanel settingsAi">
+        <div className="formHeader">
+          <div>
+            <p className="eyebrow">AI</p>
+            <h2>Gemini</h2>
+            <p className="sectionHint">
+              Klucz jest zapisany tylko lokalnie w tej przeglądarce i nie trafia do eksportu danych.
+            </p>
+          </div>
+        </div>
+
+        <div className="aiSettingsBox">
+          <label className="field">
+            <span className="fieldLabel">Klucz API Gemini</span>
+            <div className="secretInputRow">
+              <input
+                type={isApiKeyVisible ? 'text' : 'password'}
+                value={apiKeyDraft}
+                placeholder="AIza..."
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(event) => setApiKeyDraft(event.target.value)}
+              />
+              <button
+                className="iconButton"
+                type="button"
+                title={isApiKeyVisible ? 'Ukryj klucz' : 'Pokaż klucz'}
+                onClick={() => setIsApiKeyVisible((current) => !current)}
+              >
+                {isApiKeyVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </label>
+
+          <div className="aiModelInfo">
+            <KeyRound size={18} />
+            <div>
+              <span>Model</span>
+              <strong>{aiSettings.geminiModel}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div className="buttonRow">
+          <button className="button buttonSecondary" type="button" onClick={saveGeminiApiKey}>
+            <Save size={19} />
+            Zapisz klucz
+          </button>
+          <button className="button buttonGhost" type="button" onClick={clearGeminiApiKey}>
+            <Trash2 size={19} />
+            Usuń klucz
+          </button>
+        </div>
+      </section>
+
       <section className="panel formGrid settingsPanel settingsData">
         <div className="formHeader">
           <div>
             <p className="eyebrow">Plik JSON</p>
             <h2>Dane aplikacji</h2>
+            <p className="sectionHint">
+              Dane są zapisane w tej przeglądarce. Przed czyszczeniem telefonu lub aplikacji warto zrobić eksport.
+            </p>
           </div>
         </div>
         <div className="buttonRow">
@@ -193,7 +281,7 @@ export function SettingsPage({
       <ConfirmDialog
         open={confirmClear}
         title="Wyczyścić wszystkie dane?"
-        message="Składniki, przepisy, historia i ustawienia zostaną usunięte z tej przeglądarki."
+        message="Składniki, przepisy, historia wycen, listy zakupów i ustawienia zostaną usunięte z tej przeglądarki."
         confirmLabel="Wyczyść"
         destructive
         onCancel={() => setConfirmClear(false)}

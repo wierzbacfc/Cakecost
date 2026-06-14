@@ -1,4 +1,4 @@
-import { BookOpen, Copy, Edit3, Plus, Trash2 } from 'lucide-react';
+import { BookOpen, Copy, Edit3, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { EmptyState } from '../../components/EmptyState';
@@ -6,26 +6,33 @@ import { Money } from '../../components/Money';
 import { calculateRecipeIngredientsCost, getActiveLaborMinutes } from '../../lib/calculations';
 import { createId } from '../../lib/id';
 import { formatPanShape } from '../../lib/pans';
-import type { Ingredient, Recipe } from '../../lib/types';
+import type { AiSettings, Ingredient, Recipe } from '../../lib/types';
+import { AiRecipeImportDialog } from './AiRecipeImportDialog';
 import { RecipeForm } from './RecipeForm';
 
 type RecipesPageProps = {
   recipes: Recipe[];
   ingredients: Ingredient[];
+  aiSettings: AiSettings;
   onSave: (recipe: Recipe) => void;
   onDelete: (recipeId: string) => void;
   onOpenIngredients: () => void;
+  onOpenSettings: () => void;
 };
 
 export function RecipesPage({
   recipes,
   ingredients,
+  aiSettings,
   onSave,
   onDelete,
-  onOpenIngredients
+  onOpenIngredients,
+  onOpenSettings
 }: RecipesPageProps) {
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [aiDraftRecipe, setAiDraftRecipe] = useState<Recipe | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [isAiImportOpen, setIsAiImportOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Recipe | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -36,6 +43,7 @@ export function RecipesPage({
 
   function closeForm() {
     setEditingRecipe(null);
+    setAiDraftRecipe(null);
     setIsAdding(false);
   }
 
@@ -46,12 +54,21 @@ export function RecipesPage({
 
   function openAddForm() {
     setEditingRecipe(null);
+    setAiDraftRecipe(null);
     setIsAdding(true);
   }
 
   function openEditForm(recipe: Recipe) {
     setIsAdding(false);
+    setAiDraftRecipe(null);
     setEditingRecipe(recipe);
+  }
+
+  function handleAiImported(recipe: Recipe) {
+    setIsAiImportOpen(false);
+    setEditingRecipe(null);
+    setIsAdding(false);
+    setAiDraftRecipe(recipe);
   }
 
   function duplicateRecipe(recipe: Recipe) {
@@ -67,7 +84,7 @@ export function RecipesPage({
   }
 
   useEffect(() => {
-    if (!isAdding && !editingRecipe) {
+    if (!isAdding && !editingRecipe && !aiDraftRecipe) {
       return;
     }
 
@@ -78,7 +95,7 @@ export function RecipesPage({
       );
       firstField?.focus({ preventScroll: true });
     });
-  }, [editingRecipe, isAdding]);
+  }, [aiDraftRecipe, editingRecipe, isAdding]);
 
   return (
     <div className="pageStack">
@@ -87,10 +104,16 @@ export function RecipesPage({
           <p className="eyebrow">Receptury</p>
           <h1>Przepisy</h1>
         </div>
-        <button className="button buttonPrimary" type="button" onClick={openAddForm}>
-          <Plus size={20} />
-          Dodaj
-        </button>
+        <div className="buttonRow pageHeaderActions">
+          <button className="button buttonSecondary" type="button" onClick={() => setIsAiImportOpen(true)}>
+            <Sparkles size={20} />
+            Dodaj z AI
+          </button>
+          <button className="button buttonPrimary" type="button" onClick={openAddForm}>
+            <Plus size={20} />
+            Dodaj
+          </button>
+        </div>
       </section>
 
       {ingredients.length === 0 ? (
@@ -106,7 +129,7 @@ export function RecipesPage({
         />
       ) : null}
 
-      {(isAdding || editingRecipe) && (
+      {(isAdding || editingRecipe || aiDraftRecipe) && (
         <div className="dialogBackdrop recipeFormBackdrop" role="presentation">
           <div
             ref={formRef}
@@ -116,7 +139,8 @@ export function RecipesPage({
             aria-labelledby="recipe-form-title"
           >
             <RecipeForm
-              recipe={editingRecipe ?? undefined}
+              recipe={aiDraftRecipe ?? editingRecipe ?? undefined}
+              isNewRecipe={isAdding || Boolean(aiDraftRecipe)}
               ingredients={ingredients}
               onSave={handleSave}
               onCancel={closeForm}
@@ -164,6 +188,16 @@ export function RecipesPage({
             setDeleteTarget(null);
           }
         }}
+      />
+
+      <AiRecipeImportDialog
+        open={isAiImportOpen}
+        aiSettings={aiSettings}
+        ingredients={ingredients}
+        onImported={handleAiImported}
+        onCancel={() => setIsAiImportOpen(false)}
+        onOpenIngredients={onOpenIngredients}
+        onOpenSettings={onOpenSettings}
       />
     </div>
   );

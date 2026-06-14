@@ -5,6 +5,7 @@ type HomePageProps = {
   ingredientCount: number;
   recipeCount: number;
   historyCount: number;
+  shoppingListCount: number;
   onNavigate: (page: Page) => void;
 };
 
@@ -21,6 +22,7 @@ export function HomePage({
   ingredientCount,
   recipeCount,
   historyCount,
+  shoppingListCount,
   onNavigate
 }: HomePageProps) {
   return (
@@ -48,6 +50,10 @@ export function HomePage({
         <article className="statTile">
           <span>Wyceny</span>
           <strong>{historyCount}</strong>
+        </article>
+        <article className="statTile">
+          <span>Listy zakupów</span>
+          <strong>{shoppingListCount}</strong>
         </article>
       </section>
 

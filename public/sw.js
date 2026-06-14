@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cakecost-pwa-v7';
+const CACHE_NAME = 'cakecost-pwa-v9';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -6,7 +6,6 @@ self.addEventListener('install', (event) => {
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
   );
 });
 
